@@ -15,7 +15,9 @@
                 </Grid.RowDefinitions>
                 <ImageButton Grid.Row="0" Grid.Column="0"></ImageButton>
                 <ImageButton Grid.Row="0" Grid.Column="1"></ImageButton>
-                
+                <ImageButton Grid.Row="1" Grid.Column="1"></ImageButton>
+                <ImageButton Grid.Row="1" Grid.Column="1"></ImageButton>
+
             </Grid>
         </Frame>
         
