@@ -9,7 +9,14 @@
             <Label Text="Tracker" HorizontalTextAlignment="Center" TextColor="White" FontSize="36" FontFamily="Clear"/>
         </Frame>
         <Frame HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White" Margin="5,0,5,5">
-            
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ImageButton Grid.Row="0" Grid.Column="0"></ImageButton>
+                <ImageButton Grid.Row="0" Grid.Column="1"></ImageButton>
+                
+            </Grid>
         </Frame>
         
         
