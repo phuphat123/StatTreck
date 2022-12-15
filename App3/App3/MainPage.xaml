@@ -1,37 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="App3.MainPage">
+             xmlns:controls="http://schemas.microsoft.com/winfx/2006/xaml/presentation/controls"
+             x:Class="App3.MainPage"
+             >
+
 
 
     <StackLayout BackgroundColor="#FFE633">
         <Frame BackgroundColor="#FFE633" Padding="12" CornerRadius="0">
             <Label Text="Tracker" HorizontalTextAlignment="Center" TextColor="White" FontSize="36" FontFamily="Clear"/>
         </Frame>
-<<<<<<< Updated upstream
-        <Frame HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" BackgroundColor="White" Margin="5,0,5,5">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="200"></RowDefinition>
-                </Grid.RowDefinitions>
-                <ImageButton Grid.Row="0" Grid.Column="0"></ImageButton>
-                <ImageButton Grid.Row="0" Grid.Column="1"></ImageButton>
-                <ImageButton Grid.Row="1" Grid.Column="1"></ImageButton>
-                <ImageButton Grid.Row="1" Grid.Column="1"></ImageButton>
-=======
         
             <ScrollView HeightRequest="1000">
             <StackLayout>
-                <Button HeightRequest="200" WidthRequest="200" HorizontalOptions="Start"></Button>
-                <Button HeightRequest="200" WidthRequest="200" HorizontalOptions="End"></Button>
-                    
-                    
+                <Button HeightRequest="200" WidthRequest="200"></Button>
+                <Button HeightRequest="200" WidthRequest="200"></Button>
 
->>>>>>> Stashed changes
+                <Button HeightRequest="200" WidthRequest="200"></Button>
+                <Button HeightRequest="200" WidthRequest="200"></Button>
+                <Button HeightRequest="200" WidthRequest="200"></Button>
+                <Button HeightRequest="200" WidthRequest="200"></Button>
 
 
 
-                
+
+
+
+
             </StackLayout>
         </ScrollView>
         
