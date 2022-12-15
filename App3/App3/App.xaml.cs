@@ -9,11 +9,14 @@ namespace App3
 {
     public partial class App : Application
     {
+        
         public App()
         {
             InitializeComponent();
+            
+            MainPage = new NavigationPage(new Page1());
+            ((NavigationPage)MainPage).BarBackgroundColor = Color.FromHex("#FFE633");
 
-            MainPage = new MainPage();
         }
 
         protected override void OnStart()

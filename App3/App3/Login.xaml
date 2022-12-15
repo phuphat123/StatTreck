@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+    
+    <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App3.Page1"
+                 xmlns:helpers="clr-namespace:App3.Helpers;assembly=App3"
+                 >
+
+    
+    <ContentPage.Content>
+
+        <StackLayout Orientation="Vertical" Padding="20" BackgroundColor="#FFE633">
+            <Label Text="App Usage" FontSize="30" HorizontalOptions="Center"></Label>
+            <Image HeightRequest="30" WidthRequest="30" Source="{helpers:ImageResource App3.Images.star.jpg}"></Image>
+            <Entry x:Name="usernameEntry" Placeholder="Username" HeightRequest="80"/>
+            <Entry x:Name="passwordEntry" Placeholder="Password" IsPassword="true" HeightRequest="80" />
+            <Label Padding="10"></Label>
+            <Button Text="Sign In" Clicked="Button_Clicked" BackgroundColor="#D95055"/>
+            
+            
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
