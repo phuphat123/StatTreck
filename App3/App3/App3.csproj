@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,6 +9,19 @@
     <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="finger.jpg" />
+    <None Remove="Images\finger.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="finger.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\finger.jpg" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2196" />
