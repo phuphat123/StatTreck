@@ -14,13 +14,19 @@
         
             <ScrollView HeightRequest="1000">
             <StackLayout>
-                <Button HeightRequest="200" WidthRequest="200"></Button>
-                <Button HeightRequest="200" WidthRequest="200"></Button>
+                <StackLayout.GestureRecognizers>
+                    <SwipeGestureRecognizer Threshold="10" Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
 
+                </StackLayout.GestureRecognizers>
                 <Button HeightRequest="200" WidthRequest="200"></Button>
                 <Button HeightRequest="200" WidthRequest="200"></Button>
-                <Button HeightRequest="200" WidthRequest="200"></Button>
-                <Button HeightRequest="200" WidthRequest="200"></Button>
+                
+              
+
+
+
+
+
 
 
 

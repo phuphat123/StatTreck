@@ -13,7 +13,13 @@ namespace App3
         public MainPage()
         {
             InitializeComponent();
+            
 
+        }
+
+        private void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
+        {
+            Navigation.PushAsync(new Data());
         }
     }
 }
