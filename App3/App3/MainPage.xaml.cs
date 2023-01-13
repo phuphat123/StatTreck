@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace App3
 {
@@ -18,6 +19,9 @@ namespace App3
 
             GPS.Clicked += Button_Clicked;
             Motion.Clicked += Button_Clicked;
+            
+            
+            
 
         }
 
@@ -26,7 +30,7 @@ namespace App3
             Navigation.PushAsync(new Data());
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private async void Button_Clicked(object sender, EventArgs e)
         {
             Debug.WriteLine("Button Clicked!");
             Data emptyPage = new Data();
@@ -35,19 +39,47 @@ namespace App3
             {
                 Debug.WriteLine("GPS Clicked");
                 StackLayout s = new StackLayout();
-                s.Children.Add(new Label {Text = "You've clicked GPS!" });
+                s.Children.Add(new Label { Text = "You've clicked GPS!" });
+                string locationStr = "";
+                
+                //check status
+                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+                if (status != PermissionStatus.Granted)
+                {
+                    Debug.WriteLine("No Permission yet");
+                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>(); 
+                }
+                if (status == PermissionStatus.Granted)
+                {
+                    try //track locatiohn
+                    {
+                        var location = await Geolocation.GetLastKnownLocationAsync();
+                        if (location != null)
+                        {
+                            Debug.WriteLine(location.Latitude + "" + location.Altitude);
+                            locationStr += location.Latitude + "" + location.Altitude;
+                        }
+                    }
+                    catch (FeatureNotSupportedException fnsEx) { Debug.WriteLine("Feature not supported." + fnsEx.Message); }
+                    catch (PermissionException pEx) { Debug.WriteLine("Feature not supported." + pEx.Message); }
+                    catch (Exception ex) { Debug.WriteLine("Feature not supported." + ex.Message); }
+                }
+                else {
+                    Debug.WriteLine("lOCATION not granted)");
+                }
+                s.Children.Add(new Label { Text = locationStr});
                 emptyPage.Content = s;
-                Navigation.PushAsync(emptyPage);
-
-
+                await Navigation.PushAsync(emptyPage);
             }
-            else if (button == Motion) {
+            else if (button == Motion) 
+            {
                 Debug.WriteLine("Motion Clicked");
                 StackLayout s = new StackLayout();
                 s.Children.Add(new Label { Text = "You've clicked Motion!" });
                 emptyPage.Content = s;
-                Navigation.PushAsync(emptyPage);
+                await Navigation.PushAsync(emptyPage);
             }
+            
 
         }
     }
