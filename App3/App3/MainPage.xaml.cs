@@ -8,17 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Essentials;
+using System.Data;
 
 namespace App3
 {
     public partial class MainPage : ContentPage
     {
+        
         public MainPage()
         {
             InitializeComponent();
 
             GPS.Clicked += Button_Clicked;
             Motion.Clicked += Button_Clicked;
+
             
             
             
@@ -51,22 +54,23 @@ namespace App3
                 }
                 if (status == PermissionStatus.Granted)
                 {
-                    try //track locatiohn
+                    try //track location
                     {
                         var location = await Geolocation.GetLastKnownLocationAsync();
                         if (location != null)
                         {
                             Debug.WriteLine(location.Latitude + "" + location.Altitude);
-                            locationStr += location.Latitude + "" + location.Altitude;
+                            locationStr += "Latitude: " + location.Latitude + " Longitude: " + location.Longitude;
                         }
                     }
                     catch (FeatureNotSupportedException fnsEx) { Debug.WriteLine("Feature not supported." + fnsEx.Message); }
                     catch (PermissionException pEx) { Debug.WriteLine("Feature not supported." + pEx.Message); }
                     catch (Exception ex) { Debug.WriteLine("Feature not supported." + ex.Message); }
                 }
-                else {
-                    Debug.WriteLine("lOCATION not granted)");
-                }
+
+
+
+                
                 s.Children.Add(new Label { Text = locationStr});
                 emptyPage.Content = s;
                 await Navigation.PushAsync(emptyPage);

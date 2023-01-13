@@ -18,8 +18,8 @@
                     <SwipeGestureRecognizer Threshold="10" Direction="Left" Swiped="SwipeGestureRecognizer_Swiped"/>
 
                 </StackLayout.GestureRecognizers>
-                <Button HeightRequest="200" WidthRequest="200" x:Name="GPS"></Button>
-                <Button HeightRequest="200" WidthRequest="200" x:Name="Motion"></Button>
+                <Button HeightRequest="200" WidthRequest="200" Text="GPS"  x:Name="GPS"></Button>
+                <Button HeightRequest="200" WidthRequest="200" Text="Motion" x:Name="Motion"></Button>
                 
               
 
