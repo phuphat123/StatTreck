@@ -4,6 +4,7 @@ using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
+using Android.Content;
 
 namespace App3.Droid
 {
@@ -17,7 +18,18 @@ namespace App3.Droid
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
-            
+
+            var packageManager = Android.App.Application.Context.PackageManager;
+            var componentName = new ComponentName(Android.App.Application.Context, Java.Lang.Class.FromType(typeof(LocationService)));
+            var serviceInfo = packageManager.GetServiceInfo(componentName, PackageInfoFlags.Services);
+            if (serviceInfo != null)
+            {
+                // Service is registered
+                System.Diagnostics.Debug.WriteLine("Service is registered");
+
+
+            }
+
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
@@ -25,5 +37,6 @@ namespace App3.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+
     }
 }
