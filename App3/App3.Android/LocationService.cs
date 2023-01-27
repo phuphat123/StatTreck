@@ -23,10 +23,13 @@ namespace App3.Droid
 
         LocationManager _locationManager;
         string _locationProvider;
+        const int REQUEST_FOREGROUND_SERVICE = 0;
 
         const int NOTIFICATION_ID = 1;
         NotificationManager manager;
 
+        private string _notificationTitle = "App is running in background";
+        private string _notificationText = "App is tracking your location";
         public override IBinder OnBind(Intent intent)
         {
             return null;
@@ -36,6 +39,8 @@ namespace App3.Droid
         {
 
             base.OnCreate();
+
+
 
             manager = (NotificationManager)GetSystemService(NotificationService);
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
@@ -52,11 +57,12 @@ namespace App3.Droid
 
             if (_locationManager.IsProviderEnabled(_locationProvider))
             {
-                _locationManager.RequestLocationUpdates(_locationProvider, 0, 0, this);
+                _locationManager.RequestLocationUpdates(_locationProvider, 300000, 10, this);
             }
             else
             {
                 Toast.MakeText(this, "Please enable GPS.", ToastLength.Long).Show();
+                
             }
 
 
@@ -67,8 +73,20 @@ namespace App3.Droid
 
             Android.Util.Log.Debug("LocationService", "OnStartCommand Called");
 
+            var notificationBuilder = new Notification.Builder(this)
+            .SetContentTitle(_notificationTitle)
+            .SetContentText(_notificationText)
+            .SetSmallIcon(Resource.Mipmap.icon);
+            var notification = notificationBuilder.Build();
+            manager = (NotificationManager)GetSystemService(Context.NotificationService);
+            manager.Notify(NOTIFICATION_ID, notification);
+            
 
-            // manager.Notify(NOTIFICATION_ID, notification);
+
+
+
+
+
 
 
 
@@ -88,7 +106,18 @@ namespace App3.Droid
 
         public void OnLocationChanged(Location location)
         {
-            // Do something with the location here
+            double latitude = location.Latitude;
+            double longitude = location.Longitude;
+            string coordinates = latitude + "," + longitude;
+
+            System.Diagnostics.Debug.WriteLine("Toggle Off");
+            Toast.MakeText(this, latitude + "," + longitude, ToastLength.Short).Show();
+
+
+
+
+
+
         }
 
         public void OnProviderDisabled(string provider) { }

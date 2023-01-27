@@ -1,6 +1,7 @@
 ﻿using App3.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Essentials;
 using Xamarin.Forms.Xaml;
 
 
@@ -28,7 +30,7 @@ namespace App3
 
             Data settings = new Data();
             StackLayout s = new StackLayout();
-            Switch GPS_Switch = new Switch();
+            Xamarin.Forms.Switch GPS_Switch = new Xamarin.Forms.Switch();
             GPS_Switch.Toggled += Toggle_Clicked;
 
             s.Children.Add(new Label { Text = "Settings!" });
@@ -67,18 +69,30 @@ namespace App3
             if (isToggled)
             {
                 //where i want to create my inteent
-                System.Diagnostics.Debug.WriteLine("Toggle On");
 
-                DependencyService.Get<IStartService>().StartService();
+
+                System.Diagnostics.Debug.WriteLine("Toggle On");
+                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+                if (status != PermissionStatus.Granted)
+                {
+                    Debug.WriteLine("No Permission yet");
+                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                }
+                if (status == PermissionStatus.Granted)
+                {
+                    DependencyService.Get<IStartService>().StartService();
+
+
+                }
+                
 
             }
-            else {
+            else
+            {
                 System.Diagnostics.Debug.WriteLine("Toggle Off");
                 DependencyService.Get<IStopService>().StopService();
             }
-
         }
-    }
 
-    
+    }
 }
