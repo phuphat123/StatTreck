@@ -81,7 +81,7 @@ namespace App3
                 if (status == PermissionStatus.Granted)
                 {
                     DependencyService.Get<IStartService>().StartService();
-
+                    
 
                 }
                 
