@@ -15,12 +15,20 @@ namespace App3.Droid
 {
     public class StopServiceImplementation : IStopService
     {
-        public void StopService()
+        public void StopService(String s)
         {
-            System.Diagnostics.Debug.WriteLine("ISTOPSERVICE called");
-
-            var serviceToStop = new Intent(Android.App.Application.Context, typeof(LocationService));
-            Android.App.Application.Context.StopService(serviceToStop);
+            if (s == "LocationService")
+            {
+                System.Diagnostics.Debug.WriteLine("ISTOPSERVICE called");
+                System.Diagnostics.Debug.WriteLine("LocationService Stop ");
+                var serviceToStop = new Intent(Android.App.Application.Context, typeof(LocationService));
+                Android.App.Application.Context.StopService(serviceToStop);
+            }
+            if (s == "ScreenTime") {
+                System.Diagnostics.Debug.WriteLine("ScreenService Stop");
+                var serviceToStop = new Intent(Android.App.Application.Context, typeof(ScreenTimeService));
+                Android.App.Application.Context.StopService(serviceToStop);
+            }
         }
 
 

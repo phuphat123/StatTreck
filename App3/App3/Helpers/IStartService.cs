@@ -6,6 +6,6 @@ namespace App3.Helpers
 {
     public interface IStartService
     {
-        void StartService();
+        void StartService(String s);
     }
 }

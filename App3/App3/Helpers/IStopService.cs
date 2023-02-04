@@ -6,6 +6,6 @@ namespace App3.Helpers
 {
     public interface IStopService
     {
-        void StopService();
+        void StopService(String s);
     }
 }

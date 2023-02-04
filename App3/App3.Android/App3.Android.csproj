@@ -65,6 +65,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScreenTimeService.cs" />
     <Compile Include="StartServiceImplementation.cs" />
     <Compile Include="StopServiceImplementation.cs" />
   </ItemGroup>

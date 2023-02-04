@@ -51,18 +51,9 @@ public class LocationService : Service, ILocationListener
 
         _locationManager = (LocationManager)c.GetSystemService(LocationService);
         _locationProvider = LocationManager.GpsProvider;
-        System.Diagnostics.Debug.WriteLine(_locationManager);
-        System.Diagnostics.Debug.WriteLine(_locationProvider);
-        System.Diagnostics.Debug.WriteLine(_locationManager.IsProviderEnabled(_locationProvider) + "," + _locationManager.AllProviders.Contains(_locationProvider));
-            
-
-
-
-
-
-
-
-
+        //System.Diagnostics.Debug.WriteLine(_locationManager);
+        //System.Diagnostics.Debug.WriteLine(_locationProvider);
+        //System.Diagnostics.Debug.WriteLine(_locationManager.IsProviderEnabled(_locationProvider) + "," + _locationManager.AllProviders.Contains(_locationProvider));
 
 
         if (_locationManager.IsProviderEnabled(_locationProvider) && _locationManager.AllProviders.Contains(_locationProvider))
