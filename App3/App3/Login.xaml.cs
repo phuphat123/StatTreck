@@ -77,17 +77,19 @@ namespace App3
 
                 //GPS Permission Requesting
                 System.Diagnostics.Debug.WriteLine("GPS_Switch Toggle On");
-                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+
+
+                var status = await Permissions.RequestAsync<Permissions.LocationAlways>();
                 if (status != PermissionStatus.Granted)
                 {
                     Debug.WriteLine("No Permission yet");
-                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
+                    return;
+                    
                 }
-
-
                 if (status == PermissionStatus.Granted)
                 {
-                    DependencyService.Get<IStartService>().StartService("LocationService");
+                DependencyService.Get<IStartService>().StartService("LocationService");
                 }
             }
             if (!isToggled && s.AutomationId == "GPS_Switch") {

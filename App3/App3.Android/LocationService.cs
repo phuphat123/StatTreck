@@ -49,45 +49,21 @@ public class LocationService : Service, ILocationListener
         Android.Util.Log.Debug("LocationService", "OnStartCommand Called");
 
 
-        _locationManager = (LocationManager)c.GetSystemService(LocationService);
+        _locationManager = (LocationManager)this.GetSystemService(LocationService);
         _locationProvider = LocationManager.GpsProvider;
-        //System.Diagnostics.Debug.WriteLine(_locationManager);
-        //System.Diagnostics.Debug.WriteLine(_locationProvider);
-        //System.Diagnostics.Debug.WriteLine(_locationManager.IsProviderEnabled(_locationProvider) + "," + _locationManager.AllProviders.Contains(_locationProvider));
+        System.Diagnostics.Debug.WriteLine(_locationManager);
+        System.Diagnostics.Debug.WriteLine(_locationProvider);
+        System.Diagnostics.Debug.WriteLine(_locationManager.IsProviderEnabled(_locationProvider) + "," + _locationManager.AllProviders.Contains(_locationProvider));
 
 
         if (_locationManager.IsProviderEnabled(_locationProvider) && _locationManager.AllProviders.Contains(_locationProvider))
         {
                 
-            _locationManager.RequestLocationUpdates(_locationProvider, 0, 0, this);
-            //System.Diagnostics.Debug.WriteLine();
-       
-
-
-            manager = (NotificationManager)GetSystemService(NotificationService);
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-            {
-                //var channel = new NotificationChannel("channel_01", "My Channel", NotificationImportance.High);
-                //manager.CreateNotificationChannel(channel);
-                //var notificationBuilder = new Notification.Builder(this)
-                //.SetContentTitle(_notificationTitle)
-                //.SetContentText(_notificationText)
-                //.SetSmallIcon(Resource.Mipmap.icon);
-                //var notification = notificationBuilder.Build();
-                //manager = (NotificationManager)GetSystemService(Context.NotificationService);
-                //manager.Notify(NOTIFICATION_ID, notification);
-                Toast.MakeText(this, "Notifcations On", ToastLength.Short).Show();
-
-            }
-            else
-            {
-                Toast.MakeText(this, "Notifications not supported", ToastLength.Long).Show();
-            }
+            _locationManager.RequestLocationUpdates(_locationProvider, 100, 0, this);
+            
         }
         else
         {
-                
-                
             Toast.MakeText(this, "Please enable GPS.", ToastLength.Long).Show();
 
         }

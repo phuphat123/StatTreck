@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xamarin.Forms;
+using AndroidX.Core.Content;
+using System.Runtime.Remoting.Contexts;
 
 [assembly: Xamarin.Forms.Dependency(typeof(StartServiceImplementation))]
 
@@ -27,10 +29,13 @@ namespace App3.Droid
             //Starting Location Service
             if (s == "LocationService")
             {
+                { 
 
-                System.Diagnostics.Debug.WriteLine("LocationService On");
-                var serviceToStart = new Intent(Android.App.Application.Context, typeof(LocationService)); ;
-                Android.App.Application.Context.StartService(serviceToStart);
+                    System.Diagnostics.Debug.WriteLine("LocationService On");
+                    var serviceToStart = new Intent(Android.App.Application.Context, typeof(LocationService)); ;
+                    Android.App.Application.Context.StartService(serviceToStart);
+                }
+                
             }
 
             //Starting ScreenTime Service
