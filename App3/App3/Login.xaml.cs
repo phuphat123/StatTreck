@@ -84,6 +84,7 @@ namespace App3
                 if (status != PermissionStatus.Granted)
                 {
                     Debug.WriteLine("No Permission yet");
+                    
                     return;
                     
                 }

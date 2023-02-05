@@ -32,7 +32,7 @@ namespace App3.Droid
                 { 
 
                     System.Diagnostics.Debug.WriteLine("LocationService On");
-                    var serviceToStart = new Intent(Android.App.Application.Context, typeof(LocationService)); ;
+                    var serviceToStart = new Intent(Android.App.Application.Context, typeof(LocationService)); 
                     Android.App.Application.Context.StartService(serviceToStart);
                 }
                 
