@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,11 +11,11 @@ namespace App3
     public partial class App : Application
     {
         
-        public App()
+        public App(string connection, NpgsqlConnection c)
         {
             InitializeComponent();
             
-            MainPage = new NavigationPage(new Page1());
+            MainPage = new NavigationPage(new Page1(connection, c));
             ((NavigationPage)MainPage).BarBackgroundColor = Color.FromHex("#FFE633");
 
         }

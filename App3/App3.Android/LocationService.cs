@@ -97,7 +97,7 @@ namespace App3.Droid
             System.Diagnostics.Debug.WriteLine(latitude + "," + longitude);
             String msg = "New Latitude: " + latitude + "New Longitude: " + longitude;
 
-            Toast.MakeText(this, msg, ToastLength.Long).Show();
+            
 
 
 

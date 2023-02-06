@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
+using Npgsql;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Essentials;
@@ -21,10 +21,17 @@ namespace App3
     public partial class Page1 : ContentPage
     {
         MainPage main;
-        public Page1()
-        {
 
+        string connection;
+        NpgsqlConnection c;
+        
+        public Page1(string connection, NpgsqlConnection c)
+        {
             InitializeComponent();
+            this.c = c;
+            this.connection = connection;
+
+            
 
             Data settings = new Data();
             StackLayout s = new StackLayout();
@@ -42,7 +49,7 @@ namespace App3
             s.Children.Add(ScreenT_Switch);
             settings.Content = s;
 
-            main = new MainPage();
+            main = new MainPage(); // adding settings button to mainpage
             main.ToolbarItems.Add(new ToolbarItem
             {
                 Text = "Settings",
@@ -52,18 +59,42 @@ namespace App3
                 })
             });
             NavigationPage.SetHasBackButton(main, false);
-
-
-
         }
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
+            String username = usernameEntry.Text;
+            String password = passwordEntry.Text;
 
-            await Navigation.PushAsync(main, true);
+            Debug.WriteLine(username + "," + password);
 
+            try
+            {
+                using (var command = new NpgsqlCommand("SELECT * FROM users WHERE username = @username AND password = @password", c))
+                {
+                    command.Parameters.AddWithValue("@username", username);
+                    command.Parameters.AddWithValue("@password", password);
 
-
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            // Login successful
+                            Debug.WriteLine("Login Success!");
+                            await Navigation.PushAsync(main, true);
+                        }
+                        else
+                        {
+                            // Login failed
+                            Debug.WriteLine("Login Failed");
+                        }
+                    }
+                }
+            }
+            catch(Exception) {
+                Debug.WriteLine("Error! Please input username and password");
+            
+            }
 
         }
 
@@ -98,13 +129,11 @@ namespace App3
                 DependencyService.Get<IStopService>().StopService("LocationService");
             }
 
-
             //ScreenTime Service
 
             if (isToggled && s.AutomationId == "Screen_Switch")
             {
-                
-
+     
                 Debug.WriteLine("Screen_Time Toggled On");
                 DependencyService.Get<IStartService>().StartService("ScreenTime");
             }

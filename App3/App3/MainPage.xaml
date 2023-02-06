@@ -21,18 +21,6 @@
                 <Button HeightRequest="200" WidthRequest="200" Text="GPS"  x:Name="GPS"></Button>
                 <Button HeightRequest="200" WidthRequest="200" Text="Motion" x:Name="Motion"></Button>
                 
-              
-
-
-
-
-
-
-
-
-
-
-
 
             </StackLayout>
         </ScrollView>

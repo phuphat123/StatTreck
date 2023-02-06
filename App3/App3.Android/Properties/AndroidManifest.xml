@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.app3" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
-	<application android:label="App3.Android" android:theme="@style/MainTheme" android:icon="@drawable/icons8-user-location-48">
+	<application android:label="App3.Android" android:theme="@style/MainTheme">
 		
 		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyAh5pRL-rFbH-6xL5MT6j7Mc9sIijn_VF0" />
 	</application>
