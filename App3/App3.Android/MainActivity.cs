@@ -7,11 +7,12 @@ using Android.OS;
 using Android.Content;
 using Npgsql;
 using Android.Widget;
+using App3.Helpers;
 
 namespace App3.Droid
 {
     [Activity(Label = "App3", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IConnectionProvider
     {
 
         string connString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
@@ -74,6 +75,10 @@ namespace App3.Droid
                 conn.Close();
                 conn.Dispose();
             }
+        }
+        public NpgsqlConnection GetConnection()
+        {
+            return conn;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace App3
 
         string connection;
         NpgsqlConnection c;
-        
+        int pk;
         public Page1(string connection, NpgsqlConnection c)
         {
             InitializeComponent();
@@ -64,8 +64,7 @@ namespace App3
         private async void Button_Clicked(object sender, EventArgs e)
         {
             String username = usernameEntry.Text;
-            String password = passwordEntry.Text;
-
+            String password = passwordEntry.Text;    
             Debug.WriteLine(username + "," + password);
 
             try
@@ -81,7 +80,27 @@ namespace App3
                         {
                             // Login successful
                             Debug.WriteLine("Login Success!");
-                            await Navigation.PushAsync(main, true);
+                            reader.Dispose();
+                            String selectPrimaryKey = "SELECT id FROM users WHERE username = @username";
+
+                            using (NpgsqlCommand commandd = new NpgsqlCommand(selectPrimaryKey, c))
+                            {
+                                commandd.Parameters.AddWithValue("@username", username);
+
+                                var result = commandd.ExecuteScalar();
+                                if (result != null)
+                                {
+                                    int primaryKey = Convert.ToInt32(result);
+                                    pk = primaryKey;
+                                    Debug.WriteLine("Retrieved primary key." + pk);
+                                    await Navigation.PushAsync(main, true);
+                                    c.Close();
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Error: Could not retrieve primary key.");
+                                }
+                            }
                         }
                         else
                         {
@@ -91,9 +110,11 @@ namespace App3
                     }
                 }
             }
-            catch(Exception) {
-                Debug.WriteLine("Error! Please input username and password");
-            
+
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error!" + ex.Message);
+
             }
 
         }
@@ -121,7 +142,7 @@ namespace App3
                 }
                 if (status == PermissionStatus.Granted)
                 {
-                DependencyService.Get<IStartService>().StartService("LocationService");
+                DependencyService.Get<IStartService>().StartService("LocationService", pk);
                 }
             }
             if (!isToggled && s.AutomationId == "GPS_Switch") {
@@ -135,7 +156,7 @@ namespace App3
             {
      
                 Debug.WriteLine("Screen_Time Toggled On");
-                DependencyService.Get<IStartService>().StartService("ScreenTime");
+                DependencyService.Get<IStartService>().StartService("ScreenTime",pk);
             }
             if (!isToggled && s.AutomationId == "Screen_Switch") {
                 Debug.WriteLine("Screen_Time Toggled Off");

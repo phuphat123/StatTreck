@@ -22,7 +22,7 @@ namespace App3.Droid
 {
     public class StartServiceImplementation : IStartService
     {
-        public void StartService(String s)
+        public void StartService(String s, int pk)
         {
             System.Diagnostics.Debug.WriteLine("ISTARTSERVICE called" + " ");
 
@@ -32,7 +32,8 @@ namespace App3.Droid
                 { 
 
                     System.Diagnostics.Debug.WriteLine("LocationService On");
-                    var serviceToStart = new Intent(Android.App.Application.Context, typeof(LocationService)); 
+                    var serviceToStart = new Intent(Android.App.Application.Context, typeof(LocationService));
+                    serviceToStart.PutExtra("PrimaryKey", pk);
                     Android.App.Application.Context.StartService(serviceToStart);
                 }
                 
@@ -56,7 +57,7 @@ namespace App3.Droid
                 //    System.Diagnostics.Debug.WriteLine("ScreenTime Service On");
 
                 var serviceToStart = new Intent(Android.App.Application.Context, typeof(ScreenTimeService)); ;
-
+                                            //add PK
                 var status = ActivityCompat.CheckSelfPermission(Android.App.Application.Context, Android.Manifest.Permission.GetTasks);
                 System.Diagnostics.Debug.WriteLine(status);
                 if (status != Permission.Granted)

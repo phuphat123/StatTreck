@@ -11,9 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Android.Support;
-
-
-
+using Npgsql;
+using App3.Helpers;
 
 namespace App3.Droid
 {
@@ -26,16 +25,25 @@ namespace App3.Droid
         string _locationProvider;
 
         const int NOTIFICATION_ID = 1;
+        
+        
+        private int primaryKey;
+
+        string connString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
+        NpgsqlConnection _conn;
 
         public override IBinder OnBind(Intent intent)
         {
             return null;
+            
         }
 
         public override void OnCreate()
         {
             base.OnCreate();
             c = this;
+            _conn = new NpgsqlConnection(connString);
+            
         }
 
 
@@ -43,6 +51,9 @@ namespace App3.Droid
         {
 
             Android.Util.Log.Debug("LocationService", "OnStartCommand Called");
+
+            primaryKey = intent.GetIntExtra("PrimaryKey", -1);
+
 
             var channel = new NotificationChannel("location_channel", "Location Channel", NotificationImportance.High);
             var notificationManager = (NotificationManager)GetSystemService(NotificationService);
@@ -85,20 +96,47 @@ namespace App3.Droid
             Log.Debug("LocationService", "StopService called");
             base.OnDestroy();
             _locationManager.RemoveUpdates(this);
-
+            _conn.Close();
+            
         }
 
         public void OnLocationChanged(Location location)
         {
             double latitude = location.Latitude;
             double longitude = location.Longitude;
+            DateTime currentDateTime = DateTime.Now;
+            string formattedDateTime = currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
             string coordinates = latitude + "," + longitude;
 
             System.Diagnostics.Debug.WriteLine(latitude + "," + longitude);
             String msg = "New Latitude: " + latitude + "New Longitude: " + longitude;
-
-            
-
+            try
+            {
+                var cmd = new NpgsqlCommand();
+                _conn.Open();
+                try
+                {
+                    cmd.Connection = _conn;
+                    cmd.CommandText = "INSERT INTO coordinates(id ,latitude, longitude, date) VALUES (@id ,@latitude, @longitude, to_timestamp(@date, 'YYYY-MM-DD HH24:MI:SS'))";
+                    cmd.Parameters.AddWithValue("@id", primaryKey);
+                    cmd.Parameters.AddWithValue("@latitude", latitude);
+                    cmd.Parameters.AddWithValue("@longitude", longitude);
+                    cmd.Parameters.AddWithValue("@date", formattedDateTime);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(this, "Error1" + ex.Message, ToastLength.Long).Show();
+                }
+                finally
+                {
+                    _conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(this, "Error 2" + ex.Message, ToastLength.Long).Show();
+            }
 
 
         }

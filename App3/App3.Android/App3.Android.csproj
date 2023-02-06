@@ -65,6 +65,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IConnectionProvider.cs" />
     <Compile Include="LocationService.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
