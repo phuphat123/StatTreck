@@ -10,105 +10,168 @@ using Xamarin.Forms;
 using Xamarin.Essentials;
 using System.Data;
 using Xamarin.Forms.Maps;
+using Npgsql;
+using SQLite;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using System.Globalization;
 
 namespace App3
 {
     public partial class MainPage : ContentPage
+
+
     {
-        
-        public MainPage()
+        string connString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
+        NpgsqlConnection _conn;
+        int pk;
+        Page1 loginPage;
+
+        //MAP Data
+        List<Pin> pin;
+        Xamarin.Forms.Picker picker;
+        List<DateTime> availableDays;
+        public MainPage(Page1 p)
         {
             InitializeComponent();
-
+            loginPage = p;
+            picker = new Xamarin.Forms.Picker
+            {
+                Title = "Select a Day",
+            };
+            //actionlisteners
             GPS.Clicked += Button_Clicked;
             Motion.Clicked += Button_Clicked;
+            picker.SelectedIndexChanged += DatePicked;
 
             pin = new List<Pin>();
 
 
-
-
         }
+        Xamarin.Forms.Maps.Map map;
 
-        private void SwipeGestureRecognizer_Swiped(object sender, SwipedEventArgs e)
+        private void DatePicked(object sender, EventArgs args)
         {
-            Navigation.PushAsync(new Data());
+
+            var pins = map.Pins;
+
+            for (int i = pins.Count-1; i >= 0; i--)
+            {
+                map.Pins.RemoveAt(i);
+            }
+            
+            plotLocations(availableDays[picker.SelectedIndex]);
+            Position tempPos = map.Pins[0].Position;
+            var mapSpan = MapSpan.FromCenterAndRadius(tempPos, Distance.FromMeters(500));
+            map.MoveToRegion(mapSpan);
+
+
+
         }
-        double locationLat, locationLng;
-        List<Pin> pin;
-
-
         private async void Button_Clicked(object sender, EventArgs e)
         {
-            
-
-            Debug.WriteLine("Button Clicked!");
-            Data emptyPage = new Data();
-            Button button = sender as Button;
-            if (button == GPS)
+            try
             {
-                
-                Debug.WriteLine("GPS Clicked");
-                StackLayout s = new StackLayout();
-                s.Children.Add(new Label { Text = "You've clicked GPS!" });
-                string locationStr = "";
-                
-                //check status
-                var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
-                if (status != PermissionStatus.Granted)
+                //clear datepicker
+                pk = loginPage.getPrimaryKey();
+
+                Debug.WriteLine("Button Clicked!");
+
+                Button button = sender as Button;
+                Data emptyPage = new Data();
+
+
+
+                if (button == GPS)          //GPS Button
                 {
-                    Debug.WriteLine("No Permission yet");
-                    status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>(); 
-                }
-                if (status == PermissionStatus.Granted)
-                {
-                    try //track location
+
+                    availableDays = new List<DateTime>();
+                    Debug.WriteLine("GPS Clicked");
+                    StackLayout s = new StackLayout();
+                    s.Children.Add(new Label { Text = "You've clicked GPS!" });
+                    s.Children.Add(picker);
+                    map = new Xamarin.Forms.Maps.Map();
+                    map.HeightRequest = 100;
+                    map.WidthRequest = 200;
+                    map.MapType = MapType.Street;
+                    map.IsShowingUser = false;
+                    _conn = new NpgsqlConnection(connString);
+                    using (_conn)   //Gathering all the dates avaliable in the database.
                     {
-                        var location = await Geolocation.GetLastKnownLocationAsync();
-                        if (location != null)
+                        _conn.Open();
+                        string query = "SELECT DISTINCT date::date FROM coordinates WHERE id = @id";
+                        using (var command = new NpgsqlCommand(query, _conn))
                         {
-                            Debug.WriteLine(location.Latitude + "" + location.Altitude);
-                            locationStr += "Latitude: " + location.Latitude + " Longitude: " + location.Longitude;
-                            locationLat = location.Latitude;
-                            locationLng = location.Longitude;
+                            command.Parameters.AddWithValue("@id", pk);
+                            var reader = command.ExecuteReader();
+
+                            while (reader.Read())
+                            {
+                                availableDays.Add(Convert.ToDateTime(reader["date"]));
+                            }
                         }
                     }
-                    catch (FeatureNotSupportedException fnsEx) { Debug.WriteLine("Feature not supported." + fnsEx.Message); }
-                    catch (PermissionException pEx) { Debug.WriteLine("Feature not supported." + pEx.Message); }
-                    catch (Exception ex) { Debug.WriteLine("Feature not supported." + ex.Message); }
+
+                    foreach (DateTime day in availableDays) //Displaying all dates in a Picker object
+                    {
+                        picker.Items.Add(day.ToString("MM/dd/yyyy"));
+                    }
 
 
+
+
+                    s.Children.Add(map);
+                    emptyPage.Content = s;
+                    await Navigation.PushAsync(emptyPage);
                 }
-                
-                
-                var map = new Xamarin.Forms.Maps.Map();
-                map.HeightRequest = 100;
-                map.WidthRequest = 200;
-                map.MapType = MapType.Street;
-                map.IsShowingUser = false;
-                var position = new Position(locationLat,locationLng);
-                map.MoveToRegion(MapSpan.FromCenterAndRadius(position, Distance.FromKilometers(0.5)));
-                
-                map.Pins.Add(new Pin { Type = PinType.Generic, Position = position, Label = "Current Location" });
-                
+                else if (button == Motion) //Motion Button
+                {
 
+                    Debug.WriteLine("Motion Clicked");
+                    StackLayout s = new StackLayout();
+                    s.Children.Add(new Label { Text = "You've clicked Motion!" });
+                    emptyPage.Content = s;
+                    await Navigation.PushAsync(emptyPage);
+                }
 
-
-                s.Children.Add(new Label { Text = locationStr});
-                s.Children.Add(map);
-                emptyPage.Content = s;
-                await Navigation.PushAsync(emptyPage);
             }
-            else if (button == Motion) 
-            {
-                Debug.WriteLine("Motion Clicked");
-                StackLayout s = new StackLayout();
-                s.Children.Add(new Label { Text = "You've clicked Motion!" });
-                emptyPage.Content = s;
-                await Navigation.PushAsync(emptyPage);
-            }
-            
-
+            catch(Exception ex) { Debug.WriteLine("Error 5: "+ ex.Message); }
         }
+
+        private void plotLocations(DateTime d)
+        {
+            try
+            {
+                string query = "SELECT latitude, longitude, date FROM coordinates WHERE id = @id AND date::date = @day ORDER BY date::time ASC";
+                _conn = new NpgsqlConnection(connString);
+                var cmd = new NpgsqlCommand(query, _conn);
+                cmd.Parameters.AddWithValue("@id", pk);
+                cmd.Parameters.AddWithValue("@day", d);
+                using (_conn)
+                {
+                    _conn.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            double latitude = reader.GetDouble(0);
+                            double longitude = reader.GetDouble(1);
+                            DateTime date = reader.GetDateTime(2);
+                            var position = new Position(latitude, longitude);
+                            map.Pins.Add(new Pin { Type = PinType.Generic, Position = position, Label = date.Day + " , " + date.TimeOfDay });
+
+                        }
+                    }
+                }
+
+
+            }
+            catch (Exception ex) { Debug.WriteLine("Error 3: " + ex.Message); }
+        }
+
+
+        
+
+
+
     }
 }

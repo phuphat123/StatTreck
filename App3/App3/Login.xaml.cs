@@ -24,13 +24,13 @@ namespace App3
 
         string connection;
         NpgsqlConnection c;
-        int pk;
+        public int pk;
         public Page1(string connection, NpgsqlConnection c)
         {
             InitializeComponent();
             this.c = c;
             this.connection = connection;
-
+            Page1 reference = this;
             
 
             Data settings = new Data();
@@ -49,7 +49,7 @@ namespace App3
             s.Children.Add(ScreenT_Switch);
             settings.Content = s;
 
-            main = new MainPage(); // adding settings button to mainpage
+            main = new MainPage(reference); // adding settings button to mainpage
             main.ToolbarItems.Add(new ToolbarItem
             {
                 Text = "Settings",
@@ -118,7 +118,9 @@ namespace App3
             }
 
         }
-
+        public int getPrimaryKey() {
+            return pk;
+        }
         private async void Toggle_Clicked(object sender, ToggledEventArgs e)
         {
             bool isToggled = e.Value;
@@ -164,5 +166,6 @@ namespace App3
             }
         }
 
+        
     }
 }

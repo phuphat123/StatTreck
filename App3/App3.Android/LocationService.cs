@@ -77,7 +77,7 @@ namespace App3.Droid
             if (_locationManager.IsProviderEnabled(_locationProvider) && _locationManager.AllProviders.Contains(_locationProvider))
             {
 
-                _locationManager.RequestLocationUpdates(_locationProvider, 0, 0, this);
+                _locationManager.RequestLocationUpdates(_locationProvider, 10000, 2, this);
 
             }
             else
@@ -85,8 +85,6 @@ namespace App3.Droid
                 Toast.MakeText(this, "Please enable GPS.", ToastLength.Long).Show();
 
             }
-
-
             return StartCommandResult.Sticky;
 
         }
@@ -96,7 +94,7 @@ namespace App3.Droid
             Log.Debug("LocationService", "StopService called");
             base.OnDestroy();
             _locationManager.RemoveUpdates(this);
-            _conn.Close();
+            _conn.Close(); 
             
         }
 
@@ -115,7 +113,7 @@ namespace App3.Droid
                 var cmd = new NpgsqlCommand();
                 _conn.Open();
                 try
-                {
+                {       //INSERT coordinates into database
                     cmd.Connection = _conn;
                     cmd.CommandText = "INSERT INTO coordinates(id ,latitude, longitude, date) VALUES (@id ,@latitude, @longitude, to_timestamp(@date, 'YYYY-MM-DD HH24:MI:SS'))";
                     cmd.Parameters.AddWithValue("@id", primaryKey);
