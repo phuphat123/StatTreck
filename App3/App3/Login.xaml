@@ -15,6 +15,7 @@
             <Image HeightRequest="30" WidthRequest="30" Source="{helpers:ImageResource App3.Images.star.jpg}"></Image>
             <Entry x:Name="usernameEntry" Placeholder="Username" HeightRequest="80"/>
             <Entry x:Name="passwordEntry" Placeholder="Password" IsPassword="true" HeightRequest="80" />
+            
             <Label Padding="10"></Label>
             <Button Text="Sign In" Clicked="Button_Clicked" BackgroundColor="#D95055"/>
             

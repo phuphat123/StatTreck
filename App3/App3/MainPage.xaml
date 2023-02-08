@@ -16,6 +16,8 @@
             <StackLayout>
                 <Button HeightRequest="200" WidthRequest="200" Text="GPS"  x:Name="GPS"></Button>
                 <Button HeightRequest="200" WidthRequest="200" Text="Motion" x:Name="Motion"></Button>
+                <Button HeightRequest="200" WidthRequest="200" Text="ScreenTime(Temporary)" x:Name="ScreenTime"></Button>
+                <Button HeightRequest="200" WidthRequest="200" Text="TEST" x:Name="TestButton"></Button>
             </StackLayout>
         </ScrollView>
         

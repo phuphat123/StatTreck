@@ -14,6 +14,7 @@ using Npgsql;
 using SQLite;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using System.Globalization;
+using App3.Helpers;
 
 namespace App3
 {
@@ -41,6 +42,8 @@ namespace App3
             //actionlisteners
             GPS.Clicked += Button_Clicked;
             Motion.Clicked += Button_Clicked;
+            ScreenTime.Clicked += Button_Clicked;
+            TestButton.Clicked += Button_Clicked;
             picker.SelectedIndexChanged += DatePicked;
 
             pin = new List<Pin>();
@@ -129,6 +132,16 @@ namespace App3
                     Debug.WriteLine("Motion Clicked");
                     StackLayout s = new StackLayout();
                     s.Children.Add(new Label { Text = "You've clicked Motion!" });
+                    emptyPage.Content = s;
+                    await Navigation.PushAsync(emptyPage);
+                }
+                else if (button == ScreenTime) {
+
+                    Debug.WriteLine("ScreenTime Clicked");
+                    StackLayout s = new StackLayout();
+                    IAppUsageTracker appUsageTracker = DependencyService.Get<IAppUsageTracker>();
+                    string appUsageTime = appUsageTracker.GetAppUsageTime();
+                    s.Children.Add(new Label {Text = appUsageTime});
                     emptyPage.Content = s;
                     await Navigation.PushAsync(emptyPage);
                 }
