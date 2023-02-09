@@ -7,5 +7,7 @@ namespace App3.Helpers
     public interface IAppUsageTracker
     {
         string GetAppUsageTime();
+        bool HasUsageAccessGranted();
+        void RequestUsageAccess();
     }
 }

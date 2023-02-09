@@ -1,5 +1,7 @@
 ﻿using Android.App;
+using Android.App.Usage;
 using Android.Content;
+using Android.Provider;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -17,33 +19,63 @@ namespace App3.Droid
 
 
     public class AppUsageTracker : IAppUsageTracker
-    { 
-        private Dictionary<string, int> _appUsageTime;
+    {
+        
 
         public string GetAppUsageTime()
         {
-            ActivityManager am = (ActivityManager)Application.Context.GetSystemService(Context.ActivityService);
-            var runningAppProcesses = am.RunningAppProcesses;
-            _appUsageTime = new Dictionary<string, int>();
-            foreach (var process in runningAppProcesses)
+            var usageStatsManager = (UsageStatsManager)Application.Context.GetSystemService(Context.UsageStatsService);
+            var time = Java.Lang.JavaSystem.CurrentTimeMillis();
+            var usageEvents = usageStatsManager.QueryEvents(time - TimeSpan.FromDays(1).Ticks, time);
+            Dictionary<string, long> appUsageTime = new Dictionary<string, long>();
+            string currentApp = "";
+            long foregroundTime = 0;
+
+            while (usageEvents.HasNextEvent)
             {
-                if (process.Importance == Importance.Foreground)
+                var usageEvent = new UsageEvents.Event();
+                usageEvents.GetNextEvent(usageEvent);
+
+                if (usageEvent.EventType == UsageEventType.MoveToForeground)
                 {
-                    string appName = process.ProcessName;
-                    if (!_appUsageTime.ContainsKey(appName))
+                    currentApp = usageEvent.PackageName;
+                    foregroundTime = usageEvent.TimeStamp;
+                }
+                else if (usageEvent.EventType == UsageEventType.MoveToBackground && currentApp == usageEvent.PackageName)
+                {
+                    if (!appUsageTime.ContainsKey(currentApp))
                     {
-                        _appUsageTime[appName] = 0;
+                        appUsageTime[currentApp] = 0;
                     }
-                    _appUsageTime[appName]++;
+                    appUsageTime[currentApp] += usageEvent.TimeStamp - foregroundTime;
                 }
             }
 
-            string result = "App Usage Time per day:\n";
-            foreach (var item in _appUsageTime)
+            StringBuilder result = new StringBuilder();
+            foreach (var appUsage in appUsageTime)
             {
-                result += $"{item.Key}: {item.Value} seconds\n";
+                result.AppendLine(appUsage.Key + ": " + TimeSpan.FromMilliseconds(appUsage.Value).TotalSeconds + " seconds");
             }
-            return result;
+
+            return result.ToString();
         }
+
+        public bool HasUsageAccessGranted()
+        {
+            System.Diagnostics.Debug.WriteLine("HasUsageAccessGranted Function");
+            var usageStatsManager = (UsageStatsManager)Application.Context.GetSystemService(Context.UsageStatsService);
+            var appList = usageStatsManager.QueryUsageStats(UsageStatsInterval.Daily, 0, System.DateTime.Now.Ticks);
+            return appList != null && appList.Any();
+        }
+
+        public void RequestUsageAccess()
+        {
+            System.Diagnostics.Debug.WriteLine("RequestUsageAccess Function");
+            Intent intent = new Intent(Android.Provider.Settings.ActionUsageAccessSettings);
+            intent.AddFlags(ActivityFlags.NewTask);
+            Android.App.Application.Context.StartActivity(intent);
+        }
+
     }
+    
 }

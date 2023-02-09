@@ -131,17 +131,35 @@ namespace App3
 
                     Debug.WriteLine("Motion Clicked");
                     StackLayout s = new StackLayout();
-                    s.Children.Add(new Label { Text = "You've clicked Motion!" });
-                    emptyPage.Content = s;
+                    s.Children.Add(new Label { Text = "You have clicked motion" });
+
+                    var motionPage = new Motion2();
+                    motionPage.Shaken += (Shaken, args) =>
+                    {
+                        s.Children.Add(new Label { Text = "Shake detected" });
+                        emptyPage.Content = s;
+                    };
+                    motionPage.ToggleAccelerometer();
                     await Navigation.PushAsync(emptyPage);
                 }
-                else if (button == ScreenTime) {
-
+                else if (button == ScreenTime)
+                {
                     Debug.WriteLine("ScreenTime Clicked");
                     StackLayout s = new StackLayout();
+                    Xamarin.Forms.ScrollView scrollview = new Xamarin.Forms.ScrollView();
+                    s.Children.Add(scrollview);
+                    
                     IAppUsageTracker appUsageTracker = DependencyService.Get<IAppUsageTracker>();
-                    string appUsageTime = appUsageTracker.GetAppUsageTime();
-                    s.Children.Add(new Label {Text = appUsageTime});
+                    if (appUsageTracker.HasUsageAccessGranted())
+                    {
+                        string appUsageTime = appUsageTracker.GetAppUsageTime();
+                        scrollview.Content = (new Label { Text = appUsageTime });
+                    }
+                    else
+                    {
+                        appUsageTracker.RequestUsageAccess();
+                        s.Children.Add(new Label { Text = "Usage access permission not granted" });
+                    }
                     emptyPage.Content = s;
                     await Navigation.PushAsync(emptyPage);
                 }
@@ -181,8 +199,36 @@ namespace App3
             catch (Exception ex) { Debug.WriteLine("Error 3: " + ex.Message); }
         }
 
+        public partial class Motion2 : ContentPage
+        {
+            SensorSpeed speed = SensorSpeed.Game;
 
-        
+            public event EventHandler Shaken;
+
+
+
+            public void ToggleAccelerometer()
+            {
+                try
+                {
+                    if (Accelerometer.IsMonitoring)
+                        Accelerometer.Stop();
+                    else
+                        Accelerometer.Start(speed);
+                }
+                catch (FeatureNotSupportedException fnsEx)
+                {
+                    Console.WriteLine("Feature not supported" + fnsEx);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error" + ex);
+                }
+
+                Shaken?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
 
 
 
