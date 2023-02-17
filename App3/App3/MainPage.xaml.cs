@@ -15,6 +15,9 @@ using SQLite;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using System.Globalization;
 using App3.Helpers;
+using Microcharts.Forms;
+using Xamarin.Forms.Shapes;
+
 
 namespace App3
 {
@@ -52,15 +55,18 @@ namespace App3
         }
         Xamarin.Forms.Maps.Map map;
 
+        private Xamarin.Forms.Maps.Polyline _polyline;
         private void DatePicked(object sender, EventArgs args)
         {
 
             var pins = map.Pins;
-
+            
             for (int i = pins.Count-1; i >= 0; i--)
             {
                 map.Pins.RemoveAt(i);
+                
             }
+            map.MapElements.Remove(_polyline);
             
             plotLocations(availableDays[picker.SelectedIndex]);
             Position tempPos = map.Pins[0].Position;
@@ -148,12 +154,36 @@ namespace App3
                     StackLayout s = new StackLayout();
                     Xamarin.Forms.ScrollView scrollview = new Xamarin.Forms.ScrollView();
                     s.Children.Add(scrollview);
-                    
+
                     IAppUsageTracker appUsageTracker = DependencyService.Get<IAppUsageTracker>();
                     if (appUsageTracker.HasUsageAccessGranted())
                     {
-                        string appUsageTime = appUsageTracker.GetAppUsageTime();
-                        scrollview.Content = (new Label { Text = appUsageTime });
+                        
+
+                        // Use a background thread to fetch the app usage data
+                        await Task.Run(() =>
+                        {
+                            Dictionary<string, double> appUsageTime = appUsageTracker.GetAppUsageTime();
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                
+
+                                var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (float)TimeSpan.FromMilliseconds(pair.Value).TotalSeconds);
+
+                                var chart = new Microcharts.BarChart() { Entries = appUsageData.Select(pair => new Microcharts.ChartEntry(pair.Value) { Label = pair.Key, ValueLabel = pair.Value.ToString() }).ToList() };
+
+                                // Show the chart using a pop-up page
+                                ChartView c = new ChartView();
+                                chart.LabelTextSize = 20;
+                                chart.AnimationDuration = TimeSpan.FromMilliseconds(1000);
+                                c.Chart = chart;
+                                c.HeightRequest = 1500;
+                                c.WidthRequest = 1500;
+                                
+                                scrollview.Content = c;
+                                scrollview.Orientation = ScrollOrientation.Horizontal;
+                            });
+                        });
                     }
                     else
                     {
@@ -177,27 +207,47 @@ namespace App3
                 var cmd = new NpgsqlCommand(query, _conn);
                 cmd.Parameters.AddWithValue("@id", pk);
                 cmd.Parameters.AddWithValue("@day", d);
+
                 using (_conn)
                 {
                     _conn.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
+                        var positions = new List<Position>();
                         while (reader.Read())
                         {
                             double latitude = reader.GetDouble(0);
                             double longitude = reader.GetDouble(1);
                             DateTime date = reader.GetDateTime(2);
                             var position = new Position(latitude, longitude);
-                            map.Pins.Add(new Pin { Type = PinType.Generic, Position = position, Label = date.Day + " , " + date.TimeOfDay });
+                            map.Pins.Add(new Pin { Type = PinType.Generic,Position = position, Label = date.Day + " , " + date.TimeOfDay });
+                            
+                            positions.Add(position);
+                        }
 
+                        if (positions.Count > 1)
+                        {
+                            var polyline = new Xamarin.Forms.Maps.Polyline
+                            {
+                                StrokeColor = Color.Blue,
+                                StrokeWidth = 9,
+                                //Geopath = { positions }
+                            };
+
+                            foreach (var pos in positions)
+                            {
+                                polyline.Geopath.Add(pos);
+                            }
+                            _polyline = polyline;
+                            map.MapElements.Add(polyline);
                         }
                     }
                 }
-
-
             }
             catch (Exception ex) { Debug.WriteLine("Error 3: " + ex.Message); }
         }
+        
+
 
         public partial class Motion2 : ContentPage
         {

@@ -20,14 +20,15 @@ namespace App3.Droid
 
     public class AppUsageTracker : IAppUsageTracker
     {
-        
 
-        public string GetAppUsageTime()
+
+        public Dictionary<string, double> GetAppUsageTime()
         {
             var usageStatsManager = (UsageStatsManager)Application.Context.GetSystemService(Context.UsageStatsService);
             var time = Java.Lang.JavaSystem.CurrentTimeMillis();
             var usageEvents = usageStatsManager.QueryEvents(time - TimeSpan.FromDays(1).Ticks, time);
             Dictionary<string, long> appUsageTime = new Dictionary<string, long>();
+            Dictionary<string, double> appUsageTimeInSeconds = new Dictionary<string, double>();
             string currentApp = "";
             long foregroundTime = 0;
 
@@ -51,15 +52,15 @@ namespace App3.Droid
                 }
             }
 
-            StringBuilder result = new StringBuilder();
             foreach (var appUsage in appUsageTime)
             {
-                result.AppendLine(appUsage.Key + ": " + TimeSpan.FromMilliseconds(appUsage.Value).TotalSeconds + " seconds");
+                var appName = appUsage.Key;
+                var usageTimeInSeconds = TimeSpan.FromMilliseconds(appUsage.Value).TotalSeconds;
+                appUsageTimeInSeconds[appName] = usageTimeInSeconds;
             }
 
-            return result.ToString();
+            return appUsageTimeInSeconds;
         }
-
         public bool HasUsageAccessGranted()
         {
             System.Diagnostics.Debug.WriteLine("HasUsageAccessGranted Function");

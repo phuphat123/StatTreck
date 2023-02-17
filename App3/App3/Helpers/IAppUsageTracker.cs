@@ -6,7 +6,7 @@ namespace App3.Helpers
 {
     public interface IAppUsageTracker
     {
-        string GetAppUsageTime();
+        Dictionary<string, double> GetAppUsageTime();
         bool HasUsageAccessGranted();
         void RequestUsageAccess();
     }

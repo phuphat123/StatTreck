@@ -8,6 +8,10 @@ using Android.Content;
 using Npgsql;
 using Android.Widget;
 using App3.Helpers;
+using System.Linq;
+
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace App3.Droid
 {
@@ -66,6 +70,7 @@ namespace App3.Droid
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+        
 
         protected override void OnDestroy()
         {
