@@ -17,7 +17,8 @@ using System.Globalization;
 using App3.Helpers;
 using Microcharts.Forms;
 using Xamarin.Forms.Shapes;
-
+using Xamarin.Forms.PlatformConfiguration;
+using SkiaSharp;
 
 namespace App3
 {
@@ -33,6 +34,7 @@ namespace App3
         //MAP Data
         List<Pin> pin;
         Xamarin.Forms.Picker picker;
+        Xamarin.Forms.Picker screenTimePicker;
         List<DateTime> availableDays;
         public MainPage(Page1 p)
         {
@@ -42,12 +44,22 @@ namespace App3
             {
                 Title = "Select a Day",
             };
+
+            screenTimePicker = new Xamarin.Forms.Picker
+            {
+                Title = "Select",
+                Items = { "This Week", "Today" },
+                
+            };
+
             //actionlisteners
             GPS.Clicked += Button_Clicked;
             Motion.Clicked += Button_Clicked;
             ScreenTime.Clicked += Button_Clicked;
             TestButton.Clicked += Button_Clicked;
             picker.SelectedIndexChanged += DatePicked;
+            screenTimePicker.SelectedIndexChanged += screenTimePicked;
+            
 
             pin = new List<Pin>();
 
@@ -56,9 +68,19 @@ namespace App3
         Xamarin.Forms.Maps.Map map;
 
         private Xamarin.Forms.Maps.Polyline _polyline;
+        int time;
+        ChartView currentChart;
+        private async void screenTimePicked(object sender, EventArgs args)
+        {
+           
+
+            
+        }
+        
+
         private void DatePicked(object sender, EventArgs args)
         {
-
+            Debug.WriteLine("DatePicked called!");
             var pins = map.Pins;
             
             for (int i = pins.Count-1; i >= 0; i--)
@@ -76,6 +98,10 @@ namespace App3
 
 
         }
+        Data GPSpage;
+        
+        
+
         private async void Button_Clicked(object sender, EventArgs e)
         {
             try
@@ -92,51 +118,62 @@ namespace App3
 
                 if (button == GPS)          //GPS Button
                 {
-
-                    availableDays = new List<DateTime>();
-                    Debug.WriteLine("GPS Clicked");
-                    StackLayout s = new StackLayout();
-                    s.Children.Add(new Label { Text = "You've clicked GPS!" });
-                    s.Children.Add(picker);
-                    map = new Xamarin.Forms.Maps.Map();
-                    map.HeightRequest = 100;
-                    map.WidthRequest = 200;
-                    map.MapType = MapType.Street;
-                    map.IsShowingUser = false;
-                    _conn = new NpgsqlConnection(connString);
-                    using (_conn)   //Gathering all the dates avaliable in the database.
+                    if (GPSpage == null)
                     {
-                        _conn.Open();
-                        string query = "SELECT DISTINCT date::date FROM coordinates WHERE id = @id";
-                        using (var command = new NpgsqlCommand(query, _conn))
+                        picker.Items.Clear();
+                        availableDays = new List<DateTime>();
+                        Debug.WriteLine("GPS Clicked");
+                        StackLayout s = new StackLayout();
+                        s.Children.Add(new Label { Text = "You've clicked GPS!" });
+                        s.Children.Add(picker);
+                        map = new Xamarin.Forms.Maps.Map();
+                        map.HeightRequest = 100;
+                        map.WidthRequest = 200;
+                        map.MapType = MapType.Street;
+                        map.IsShowingUser = false;
+                        _conn = new NpgsqlConnection(connString);
+                        using (_conn)   //Gathering all the dates avaliable in the database.
                         {
-                            command.Parameters.AddWithValue("@id", pk);
-                            var reader = command.ExecuteReader();
-
-                            while (reader.Read())
+                            _conn.Open();
+                            string query = "SELECT DISTINCT date::date FROM coordinates WHERE id = @id";
+                            using (var command = new NpgsqlCommand(query, _conn))
                             {
-                                availableDays.Add(Convert.ToDateTime(reader["date"]));
+                                command.Parameters.AddWithValue("@id", pk);
+                                var reader = command.ExecuteReader();
+
+                                while (reader.Read())
+                                {
+                                    availableDays.Add(Convert.ToDateTime(reader["date"]));
+                                }
                             }
                         }
-                    }
 
-                    foreach (DateTime day in availableDays) //Displaying all dates in a Picker object
+                        foreach (DateTime day in availableDays) //Displaying all dates in a Picker object
+                        {
+                            picker.Items.Add(day.ToString("MM/dd/yyyy"));
+                        }
+
+                        s.Children.Add(map);
+                        emptyPage.Content = s;
+                        await Navigation.PushAsync(emptyPage);
+                        GPSpage = emptyPage;
+                        emptyPage = null;
+
+                    }
+                    else
                     {
-                        picker.Items.Add(day.ToString("MM/dd/yyyy"));
+                        await Navigation.PushAsync(GPSpage);
                     }
-
-
-
-
-                    s.Children.Add(map);
-                    emptyPage.Content = s;
-                    await Navigation.PushAsync(emptyPage);
                 }
+
+
+
                 else if (button == Motion) //Motion Button
                 {
 
                     Debug.WriteLine("Motion Clicked");
                     StackLayout s = new StackLayout();
+
                     s.Children.Add(new Label { Text = "You have clicked motion" });
 
                     var motionPage = new Motion2();
@@ -150,15 +187,19 @@ namespace App3
                 }
                 else if (button == ScreenTime)
                 {
+
                     Debug.WriteLine("ScreenTime Clicked");
                     StackLayout s = new StackLayout();
+                    
+
+
                     Xamarin.Forms.ScrollView scrollview = new Xamarin.Forms.ScrollView();
                     s.Children.Add(scrollview);
+
 
                     IAppUsageTracker appUsageTracker = DependencyService.Get<IAppUsageTracker>();
                     if (appUsageTracker.HasUsageAccessGranted())
                     {
-                        
 
                         // Use a background thread to fetch the app usage data
                         await Task.Run(() =>
@@ -166,32 +207,43 @@ namespace App3
                             Dictionary<string, double> appUsageTime = appUsageTracker.GetAppUsageTime();
                             Device.BeginInvokeOnMainThread(() =>
                             {
-                                
+
 
                                 var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (float)TimeSpan.FromMilliseconds(pair.Value).TotalSeconds);
+                                
 
-                                var chart = new Microcharts.BarChart() { Entries = appUsageData.Select(pair => new Microcharts.ChartEntry(pair.Value) { Label = pair.Key, ValueLabel = pair.Value.ToString() }).ToList() };
+                                var chart = new Microcharts.BarChart()
+                                {
+                                    Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} hrs", Color = SKColor.Parse("#FF1493") }).ToList(),
+                                    BackgroundColor = SKColor.Parse("#FFFFFF"),
+                                };
 
-                                // Show the chart using a pop-up page
                                 ChartView c = new ChartView();
                                 chart.LabelTextSize = 20;
                                 chart.AnimationDuration = TimeSpan.FromMilliseconds(1000);
                                 c.Chart = chart;
                                 c.HeightRequest = 1500;
                                 c.WidthRequest = 1500;
-                                
-                                scrollview.Content = c;
+
+                                currentChart = c;
+                                scrollview.Content = currentChart;
                                 scrollview.Orientation = ScrollOrientation.Horizontal;
+
+                                emptyPage.Content = s;
+                                
+
                             });
                         });
+
                     }
                     else
                     {
                         appUsageTracker.RequestUsageAccess();
-                        s.Children.Add(new Label { Text = "Usage access permission not granted" });
+                        emptyPage.Content = new Label { Text = "no access" };
+
                     }
-                    emptyPage.Content = s;
                     await Navigation.PushAsync(emptyPage);
+
                 }
 
             }

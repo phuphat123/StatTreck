@@ -17,6 +17,11 @@ namespace App3
             InitializeComponent();
         }
 
-        
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+
+            
+        }
     }
 }
