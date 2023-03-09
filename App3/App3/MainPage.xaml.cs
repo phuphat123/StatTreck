@@ -36,9 +36,16 @@ namespace App3
         Xamarin.Forms.Picker picker;
         Xamarin.Forms.Picker screenTimePicker;
         List<DateTime> availableDays;
+
+        
+
+
         public MainPage(Page1 p)
         {
             InitializeComponent();
+            BindingContext = this;
+
+
             loginPage = p;
             picker = new Xamarin.Forms.Picker
             {
@@ -65,6 +72,21 @@ namespace App3
 
 
         }
+        private bool _isBusy;
+        public new bool IsBusy
+        {
+            get { return _isBusy; }
+            set
+            {
+                _isBusy = value;
+                ((BoxView)FindByName("Overlay")).IsVisible = _isBusy;
+                ((StackLayout)FindByName("BusyIndicator")).IsVisible = _isBusy;
+                ((ActivityIndicator)((StackLayout)FindByName("BusyIndicator")).Children[0]).IsRunning = _isBusy;
+            }
+        }
+
+
+
         Xamarin.Forms.Maps.Map map;
 
         private Xamarin.Forms.Maps.Polyline _polyline;
@@ -120,6 +142,8 @@ namespace App3
                 {
                     if (GPSpage == null)
                     {
+                        IsBusy = true; //loading screen
+
                         picker.Items.Clear();
                         availableDays = new List<DateTime>();
                         Debug.WriteLine("GPS Clicked");
@@ -158,11 +182,13 @@ namespace App3
                         await Navigation.PushAsync(emptyPage);
                         GPSpage = emptyPage;
                         emptyPage = null;
+                        IsBusy = false;
 
                     }
                     else
                     {
                         await Navigation.PushAsync(GPSpage);
+                        IsBusy = false;
                     }
                 }
 
@@ -170,7 +196,7 @@ namespace App3
 
                 else if (button == Motion) //Motion Button
                 {
-
+                    IsBusy = true;
                     Debug.WriteLine("Motion Clicked");
                     StackLayout s = new StackLayout();
 
@@ -184,11 +210,13 @@ namespace App3
                     };
                     motionPage.ToggleAccelerometer();
                     await Navigation.PushAsync(emptyPage);
+                    IsBusy = false;
                 }
                 else if (button == ScreenTime)
                 {
 
                     Debug.WriteLine("ScreenTime Clicked");
+                    IsBusy = true;
                     StackLayout s = new StackLayout();
                     
 
@@ -243,6 +271,7 @@ namespace App3
 
                     }
                     await Navigation.PushAsync(emptyPage);
+                    IsBusy = false;
 
                 }
 

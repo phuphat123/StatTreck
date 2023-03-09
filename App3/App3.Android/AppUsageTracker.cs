@@ -63,6 +63,11 @@ namespace App3.Droid
                 // add the usage time to the app usage time dictionary
                 else if (usageEvent.EventType == UsageEventType.MoveToBackground && currentApp == usageEvent.PackageName)
                 {
+                    if (pm.GetLaunchIntentForPackage(currentApp) == null)
+                    {
+                        // Skip this usage event if the app is no longer installed
+                        continue;
+                    }
                     if (!appUsageTime.ContainsKey(currentApp))
                     {
                         appUsageTime[currentApp] = 0;

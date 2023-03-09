@@ -55,7 +55,9 @@ namespace App3
                 Text = "Settings",
                 Command = new Command(() =>
                 {
-                    Navigation.PushAsync(settings);
+                    if (main.IsBusy == true) { return; }
+                    else { Navigation.PushAsync(settings); }
+                    
                 })
             });
             NavigationPage.SetHasBackButton(main, false);

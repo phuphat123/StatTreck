@@ -7,22 +7,42 @@
 
 
 
+
+    <Grid>
     <StackLayout BackgroundColor="#FFE633">
         <Frame BackgroundColor="#FFE633" Padding="12" CornerRadius="0">
             <Label Text="Tracker" HorizontalTextAlignment="Center" TextColor="White" FontSize="36" FontFamily="Clear"/>
         </Frame>
-        
+
             <ScrollView HeightRequest="1000">
-            <StackLayout>
-                <Button HeightRequest="200" WidthRequest="200" Text="GPS"  x:Name="GPS"></Button>
-                <Button HeightRequest="200" WidthRequest="200" Text="Motion" x:Name="Motion"></Button>
-                <Button HeightRequest="200" WidthRequest="200" Text="ScreenTime(Temporary)" x:Name="ScreenTime"></Button>
-                <Button HeightRequest="200" WidthRequest="200" Text="TEST" x:Name="TestButton"></Button>
-            </StackLayout>
-        </ScrollView>
-        
-        
-        
-    </StackLayout>
+                <StackLayout>
+                    <Button HeightRequest="200" WidthRequest="200" Text="GPS"  x:Name="GPS"></Button>
+                    <Button HeightRequest="200" WidthRequest="200" Text="Motion" x:Name="Motion"></Button>
+                    <Button HeightRequest="200" WidthRequest="200" Text="ScreenTime(Temporary)" x:Name="ScreenTime"></Button>
+                    <Button HeightRequest="200" WidthRequest="200" Text="TEST" x:Name="TestButton"></Button>
+                </StackLayout>
+            </ScrollView>
+        </StackLayout>
+
+        <!-- Overlay with activity indicator -->
+        <BoxView x:Name="Overlay"
+         Color="#C0808080"
+         IsVisible="{Binding IsBusy}"
+         InputTransparent="False"
+         VerticalOptions="FillAndExpand"
+         HorizontalOptions="FillAndExpand" />
+
+        <StackLayout x:Name="BusyIndicator"
+             IsVisible="{Binding IsBusy}"
+             BackgroundColor="White"
+             Opacity="0.8"
+             Padding="50,20,50,20"
+             VerticalOptions="CenterAndExpand"
+             HorizontalOptions="CenterAndExpand">
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           Color="Black" />
+            <Label Text="Loading..." />
+        </StackLayout>
+    </Grid>
 
 </ContentPage>
