@@ -39,7 +39,7 @@
                         </StackLayout.GestureRecognizers>
 
                         <Label Text="{x:Static FontAwesome2:FontAwesomeIcons2.BarsProgress}" Rotation="270"  Margin="0,40" TextColor="DarkGray" FontFamily="FA2" FontSize="40" HorizontalTextAlignment="Center" BackgroundColor="Transparent"></Label>
-                        <Label Text="Motion Tracking" HorizontalTextAlignment="Center" FontFamily="BUB"></Label>
+                        <Label Text="App Usage Statistics" HorizontalTextAlignment="Center" FontFamily="BUB"></Label>
                     </StackLayout>
 
 
