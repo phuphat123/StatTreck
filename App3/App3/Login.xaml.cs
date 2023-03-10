@@ -11,6 +11,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Essentials;
 using Xamarin.Forms.Xaml;
+using FontAwesome;
+using FontAwesome2;
 
 
 
@@ -52,14 +54,20 @@ namespace App3
             main = new MainPage(reference); // adding settings button to mainpage
             main.ToolbarItems.Add(new ToolbarItem
             {
-                Text = "Settings",
+                IconImageSource = new FontImageSource
+                {
+                    FontFamily = "FA2",
+                    Glyph = FontAwesome2.FontAwesomeIcons2.Wrench,
+                    Size = 18,
+                    Color = Color.White
+                },
                 Command = new Command(() =>
                 {
                     if (main.IsBusy == true) { return; }
                     else { Navigation.PushAsync(settings); }
-                    
+
                 })
-            });
+            }) ;
             NavigationPage.SetHasBackButton(main, false);
         }
 

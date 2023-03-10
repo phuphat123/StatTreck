@@ -18,8 +18,19 @@
 
   <ItemGroup>
     <None Remove="finger.jpg" />
+    <None Remove="Fonts\Font Awesome 6 Free-Regular-400.otf" />
+    <None Remove="Fonts\Font Awesome 6 Free-Solid-900.otf" />
+    <None Remove="Fonts\Nunito-Regular.ttf" />
+    <None Remove="Fonts\Nunito-VariableFont_wght.ttf" />
     <None Remove="Images\finger.jpg" />
     <None Remove="star.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Fonts\Font Awesome 6 Free-Regular-400.otf" />
+    <EmbeddedResource Include="Fonts\Font Awesome 6 Free-Solid-900.otf" />
+    <EmbeddedResource Include="Fonts\Nunito-Regular.ttf" />
+    <EmbeddedResource Include="Fonts\Nunito-VariableFont_wght.ttf" />
   </ItemGroup>
 
   <ItemGroup>

@@ -60,10 +60,10 @@ namespace App3
             };
 
             //actionlisteners
-            GPS.Clicked += Button_Clicked;
-            Motion.Clicked += Button_Clicked;
-            ScreenTime.Clicked += Button_Clicked;
-            TestButton.Clicked += Button_Clicked;
+            GPS_Tapped.Tapped += Button_Clicked;
+            Motion_Tapped.Tapped += Button_Clicked;
+            ScreenTime_Tapped.Tapped += Button_Clicked;
+            //TestButton.Clicked += Button_Clicked;
             picker.SelectedIndexChanged += DatePicked;
             screenTimePicker.SelectedIndexChanged += screenTimePicked;
             
@@ -133,7 +133,7 @@ namespace App3
 
                 Debug.WriteLine("Button Clicked!");
 
-                Button button = sender as Button;
+                var button = sender;
                 Data emptyPage = new Data();
 
 

@@ -1,25 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-
-    
-    <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+﻿<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App3.Page1"
-                 xmlns:helpers="clr-namespace:App3.Helpers;assembly=App3"
-                 >
+             xmlns:helpers="clr-namespace:App3.Helpers;assembly=App3"
+             xmlns:FontAwesome="clr-namespace:FontAwesome"
+             >
 
-    
     <ContentPage.Content>
+        <StackLayout Orientation="Vertical" Padding="25,0,25,0" BackgroundColor="#FFE633">
+            
 
-        <StackLayout Orientation="Vertical" Padding="20" BackgroundColor="#FFE633">
-            <Label Text="App Usage" FontSize="30" HorizontalOptions="Center"></Label>
-            <Image HeightRequest="30" WidthRequest="30" Source="{helpers:ImageResource App3.Images.star.jpg}"></Image>
-            <Entry x:Name="usernameEntry" Placeholder="Username" HeightRequest="80"/>
-            <Entry x:Name="passwordEntry" Placeholder="Password" IsPassword="true" HeightRequest="80" />
-            
-            <Label Padding="10"></Label>
-            <Button Text="Sign In" Clicked="Button_Clicked" BackgroundColor="#D95055"/>
-            
-            
+            <Label Text="{x:Static FontAwesome:FontAwesomeIcons.Star}" FontFamily="FA" FontSize="50" HorizontalTextAlignment="Center"></Label>
+            <Label Text="Stat Treck" FontSize="30" FontFamily="BUB2" HorizontalOptions="Center" />
+            <Label Text="Sign In" FontFamily="BUB" FontSize="30" Margin="5,50,0,0" />
+            <Entry x:Name="usernameEntry" Placeholder="Username" FontFamily="BUB" HeightRequest="80" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Entry x:Name="passwordEntry" Placeholder="Password" FontFamily="BUB" IsPassword="True" HeightRequest="80" Grid.Column="0" />
+                <Button Grid.Column="1" Text="{x:Static FontAwesome:FontAwesomeIcons.Eye}" FontSize="Small" WidthRequest="40" HeightRequest="40" FontFamily="FA" BackgroundColor="Transparent"/>
+                
+            </Grid>
+            <Label Padding="10" />
+            <Button Text="Sign In" FontFamily="BUB2" Clicked="Button_Clicked" BackgroundColor="#D95055" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Label Text="Forgot Password?" Margin="10,25" FontFamily="BUB2" Grid.Column="0" HorizontalTextAlignment="Start"></Label>
+                <Label Text="Sign Up" Margin="10,25" TextColor="#D95055" FontFamily="BUB2" Grid.Column="1" HorizontalTextAlignment="End"></Label>
+                
+            </Grid>
         </StackLayout>
     </ContentPage.Content>
+
 </ContentPage>
