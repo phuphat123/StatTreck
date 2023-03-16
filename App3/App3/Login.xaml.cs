@@ -67,6 +67,8 @@ namespace App3
             String password = passwordEntry.Text;
             Debug.WriteLine(username + "," + password);
 
+           
+
             if (!agreeCheckBox.IsChecked)
             {
                 await DisplayAlert("Error", "Please accept the terms of service and privacy policy to continue", "OK");
@@ -111,6 +113,7 @@ namespace App3
                                     Debug.WriteLine("Retrieved primary key." + pk);
                                     await Navigation.PushAsync(main, true);
                                     c.Close();
+                                    Navigation.RemovePage(this);
                                 }
                                 else
                                 {
