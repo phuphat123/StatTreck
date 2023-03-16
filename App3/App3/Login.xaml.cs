@@ -11,8 +11,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Essentials;
 using Xamarin.Forms.Xaml;
-using FontAwesome;
-using FontAwesome2;
 
 
 
@@ -33,7 +31,7 @@ namespace App3
             this.c = c;
             this.connection = connection;
             Page1 reference = this;
-            
+
 
             Data settings = new Data();
             StackLayout s = new StackLayout();
@@ -54,28 +52,36 @@ namespace App3
             main = new MainPage(reference); // adding settings button to mainpage
             main.ToolbarItems.Add(new ToolbarItem
             {
-                IconImageSource = new FontImageSource
-                {
-                    FontFamily = "FA2",
-                    Glyph = FontAwesome2.FontAwesomeIcons2.Wrench,
-                    Size = 18,
-                    Color = Color.White
-                },
+                Text = "Settings",
                 Command = new Command(() =>
                 {
-                    if (main.IsBusy == true) { return; }
-                    else { Navigation.PushAsync(settings); }
-
+                    Navigation.PushAsync(settings);
                 })
-            }) ;
+            });
             NavigationPage.SetHasBackButton(main, false);
         }
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
             String username = usernameEntry.Text;
-            String password = passwordEntry.Text;    
+            String password = passwordEntry.Text;
             Debug.WriteLine(username + "," + password);
+
+            if (!agreeCheckBox.IsChecked)
+            {
+                await DisplayAlert("Error", "Please accept the terms of service and privacy policy to continue", "OK");
+                return;
+            }
+
+
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                await DisplayAlert("Error", "Please enter your username and password", "OK");
+                return;
+            }
+
+
+
 
             try
             {
@@ -128,14 +134,31 @@ namespace App3
             }
 
         }
-        public int getPrimaryKey() {
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+            Navigation.PushAsync(new RegisterPage());
+        }
+        private async void TermOfService_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new TermsOfServicePage());
+        }
+        private async void PrivacyPolicy_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushAsync(new PrivacyPolicyPage());
+
+        }
+
+
+
+        public int getPrimaryKey()
+        {
             return pk;
         }
         private async void Toggle_Clicked(object sender, ToggledEventArgs e)
         {
             bool isToggled = e.Value;
             Xamarin.Forms.Switch s = sender as Xamarin.Forms.Switch;
-            
+
             if (isToggled && s.AutomationId == "GPS_Switch")
             {
 
@@ -148,16 +171,17 @@ namespace App3
                 if (status != PermissionStatus.Granted)
                 {
                     Debug.WriteLine("No Permission yet");
-                    
+
                     return;
-                    
+
                 }
                 if (status == PermissionStatus.Granted)
                 {
-                DependencyService.Get<IStartService>().StartService("LocationService", pk);
+                    DependencyService.Get<IStartService>().StartService("LocationService", pk);
                 }
             }
-            if (!isToggled && s.AutomationId == "GPS_Switch") {
+            if (!isToggled && s.AutomationId == "GPS_Switch")
+            {
                 System.Diagnostics.Debug.WriteLine("GPS_Switch Toggle Off");
                 DependencyService.Get<IStopService>().StopService("LocationService");
             }
@@ -166,16 +190,17 @@ namespace App3
 
             if (isToggled && s.AutomationId == "Screen_Switch")
             {
-     
+
                 Debug.WriteLine("Screen_Time Toggled On");
-                DependencyService.Get<IStartService>().StartService("ScreenTime",pk);
+                DependencyService.Get<IStartService>().StartService("ScreenTime", pk);
             }
-            if (!isToggled && s.AutomationId == "Screen_Switch") {
+            if (!isToggled && s.AutomationId == "Screen_Switch")
+            {
                 Debug.WriteLine("Screen_Time Toggled Off");
                 DependencyService.Get<IStopService>().StopService("ScreenTime");
             }
         }
 
-        
+
     }
 }

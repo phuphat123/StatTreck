@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="App3.RegisterPage">
+    <ContentPage.Content>
+        <StackLayout Orientation="Vertical" Padding="60" BackgroundColor="#FFE633">
+            <Label Text="Stat Treck" FontSize="30" FontFamily="BUB" HorizontalOptions="Center"></Label>
+            <Label Text="Sign Up" FontSize="22" HorizontalTextAlignment="Start" FontFamily="BUB" Margin="5,30,0,0"></Label>
+            <Entry x:Name="usernameEntry" Placeholder="Username" FontFamily="BUB" HeightRequest="80"/>
+            <Entry x:Name="emailEntry" Placeholder="xxx@123.com" FontFamily="BUB" HeightRequest="80"/>
+            <Entry x:Name="passwordEntry" Placeholder="Password" FontFamily="BUB" IsPassword="true" HeightRequest="80"/>
+
+            <Grid Margin="0,0,0,40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox x:Name="agreeCheckBox" VerticalOptions="Center" Margin="0,0,0,0" Grid.Column="0"/>
+                <Label Grid.Column="1">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="I agree to the " FontFamily="BUB"/>
+                            <Span Text="terms of service" FontFamily="BUB2" TextColor="Red" TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TermOfService_Tapped"/>
+                                </Span.GestureRecognizers>
+                            </Span>
+                            <Span Text=" and "  FontFamily="BUB"/>
+                            <Span Text="privacy policy" FontFamily="BUB2" TextColor="Blue" TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="PrivacyPolicy_Tapped"/>
+                                </Span.GestureRecognizers>
+                            </Span>
+
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </Grid>
+
+
+            <Button Text="Sign Up" Clicked="Button_Clicked" BackgroundColor="#f85f6a" WidthRequest="150" HeightRequest="50" FontFamily="BUB2" HorizontalOptions="Center" Margin="0,0,0,0"/>
+
+            <Label HorizontalOptions="Center" Margin="0,40,0,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Have an account? " FontFamily="BUB" TextColor="Black"/>
+                        <Span Text="Sign In" TextColor="Black" FontFamily="BUB2" FontAttributes="Bold" TextDecorations="Underline"/>
+                    </FormattedString>
+                </Label.FormattedText>
+                <Label.GestureRecognizers >
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>
