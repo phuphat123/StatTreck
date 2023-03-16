@@ -16,7 +16,9 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Entry x:Name="passwordEntry" Placeholder="Password" FontFamily="BUB" IsPassword="True" HeightRequest="80" Grid.Column="0" />
-                <Button Grid.Column="1" Text="{x:Static FontAwesome:FontAwesomeIcons.Eye}" FontSize="Small" WidthRequest="40" HeightRequest="40" FontFamily="FA" BackgroundColor="Transparent"/>
+                <Button Grid.Column="1" x:Name="ShowPassword" Text="{x:Static FontAwesome:FontAwesomeIcons.Eye}" FontSize="Small" WidthRequest="40" HeightRequest="40" FontFamily="FA" BackgroundColor="Transparent"
+                        Clicked="ShowPassword_Clicked"
+                        />
             </Grid>
             <Grid Margin="0,20,0,30" >
                 <Grid.ColumnDefinitions>

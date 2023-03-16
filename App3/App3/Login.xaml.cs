@@ -11,8 +11,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Essentials;
 using Xamarin.Forms.Xaml;
-
-
+using System.ComponentModel;
+using FontAwesome;
 
 namespace App3
 {
@@ -38,9 +38,13 @@ namespace App3
             Xamarin.Forms.Switch GPS_Switch = new Xamarin.Forms.Switch();
             GPS_Switch.AutomationId = "GPS_Switch";
             Xamarin.Forms.Switch ScreenT_Switch = new Xamarin.Forms.Switch();
+
+            
+
             ScreenT_Switch.AutomationId = "Screen_Switch";
             GPS_Switch.Toggled += Toggle_Clicked;
             ScreenT_Switch.Toggled += Toggle_Clicked;
+
 
             s.Children.Add(new Label { Text = "Settings!" });
             s.Children.Add(new Label { Text = "GPS Toggle" });
@@ -59,6 +63,20 @@ namespace App3
                 })
             });
             NavigationPage.SetHasBackButton(main, false);
+        }
+
+        private void ShowPassword_Clicked(object sender, EventArgs e) {
+            //show the password
+            
+            passwordEntry.IsPassword = !passwordEntry.IsPassword;
+            if (passwordEntry.IsPassword == false)
+            {
+                ShowPassword.Text = FontAwesome.FontAwesomeIcons.EyeSlash;
+            }
+            else
+            {
+                ShowPassword.Text = FontAwesome.FontAwesomeIcons.Eye;
+            }
         }
 
         private async void Button_Clicked(object sender, EventArgs e)
@@ -204,6 +222,6 @@ namespace App3
             }
         }
 
-
+        
     }
 }
