@@ -31,38 +31,9 @@ namespace App3
             this.c = c;
             this.connection = connection;
             Page1 reference = this;
-
-
-            Data settings = new Data();
-            StackLayout s = new StackLayout();
-            Xamarin.Forms.Switch GPS_Switch = new Xamarin.Forms.Switch();
-            GPS_Switch.AutomationId = "GPS_Switch";
-            Xamarin.Forms.Switch ScreenT_Switch = new Xamarin.Forms.Switch();
+            main = new MainPage(reference);
 
             
-
-            ScreenT_Switch.AutomationId = "Screen_Switch";
-            GPS_Switch.Toggled += Toggle_Clicked;
-            ScreenT_Switch.Toggled += Toggle_Clicked;
-
-
-            s.Children.Add(new Label { Text = "Settings!" });
-            s.Children.Add(new Label { Text = "GPS Toggle" });
-            s.Children.Add(GPS_Switch);
-            s.Children.Add(new Label { Text = "Screen Time Toggle" });
-            s.Children.Add(ScreenT_Switch);
-            settings.Content = s;
-
-            main = new MainPage(reference); // adding settings button to mainpage
-            main.ToolbarItems.Add(new ToolbarItem
-            {
-                Text = "Settings",
-                Command = new Command(() =>
-                {
-                    Navigation.PushAsync(settings);
-                })
-            });
-            NavigationPage.SetHasBackButton(main, false);
         }
 
         private void ShowPassword_Clicked(object sender, EventArgs e) {
@@ -175,52 +146,7 @@ namespace App3
         {
             return pk;
         }
-        private async void Toggle_Clicked(object sender, ToggledEventArgs e)
-        {
-            bool isToggled = e.Value;
-            Xamarin.Forms.Switch s = sender as Xamarin.Forms.Switch;
-
-            if (isToggled && s.AutomationId == "GPS_Switch")
-            {
-
-                //GPS Permission Requesting
-                System.Diagnostics.Debug.WriteLine("GPS_Switch Toggle On");
-
-
-
-                var status = await Permissions.RequestAsync<Permissions.LocationAlways>();
-                if (status != PermissionStatus.Granted)
-                {
-                    Debug.WriteLine("No Permission yet");
-
-                    return;
-
-                }
-                if (status == PermissionStatus.Granted)
-                {
-                    DependencyService.Get<IStartService>().StartService("LocationService", pk);
-                }
-            }
-            if (!isToggled && s.AutomationId == "GPS_Switch")
-            {
-                System.Diagnostics.Debug.WriteLine("GPS_Switch Toggle Off");
-                DependencyService.Get<IStopService>().StopService("LocationService");
-            }
-
-            //ScreenTime Service
-
-            if (isToggled && s.AutomationId == "Screen_Switch")
-            {
-
-                Debug.WriteLine("Screen_Time Toggled On");
-                DependencyService.Get<IStartService>().StartService("ScreenTime", pk);
-            }
-            if (!isToggled && s.AutomationId == "Screen_Switch")
-            {
-                Debug.WriteLine("Screen_Time Toggled Off");
-                DependencyService.Get<IStopService>().StopService("ScreenTime");
-            }
-        }
+        
 
         
     }

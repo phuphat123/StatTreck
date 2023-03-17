@@ -73,6 +73,7 @@ namespace App3.Droid
                         appUsageTime[currentApp] = 0;
                     }
                     appUsageTime[currentApp] += usageEvent.TimeStamp - foregroundTime;
+                    foregroundTime = 0; // reset foregroundTime to avoid counting time in the background
                 }
             }
 
@@ -88,6 +89,9 @@ namespace App3.Droid
             // Return the app usage time in minutes dictionary
             return appUsageTimeInMinutes;
         }
+
+
+
         public bool HasUsageAccessGranted()
         {
             

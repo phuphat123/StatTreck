@@ -57,12 +57,12 @@ namespace App3.Droid
                 //    System.Diagnostics.Debug.WriteLine("ScreenTime Service On");
 
                 var serviceToStart = new Intent(Android.App.Application.Context, typeof(ScreenTimeService)); ;
-                                            //add PK
-                var status = ActivityCompat.CheckSelfPermission(Android.App.Application.Context, Android.Manifest.Permission.GetTasks);
-                System.Diagnostics.Debug.WriteLine(status);
-                if (status != Permission.Granted)
+                AppUsageTracker a = new AppUsageTracker();
+
+                var status = a.HasUsageAccessGranted();
+                if (status != true)
                 {
-                    ActivityCompat.RequestPermissions((Activity)Forms.Context, new string[] { Android.Manifest.Permission.GetTasks }, 0);
+                    a.RequestUsageAccess();
                 }
                 else
                 {

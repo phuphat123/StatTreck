@@ -19,6 +19,7 @@ using Microcharts.Forms;
 using Xamarin.Forms.Shapes;
 using Xamarin.Forms.PlatformConfiguration;
 using SkiaSharp;
+using App3;
 
 namespace App3
 {
@@ -40,13 +41,59 @@ namespace App3
         
 
 
-        public MainPage(Page1 p)
+
+public MainPage(Page1 p)
         {
             InitializeComponent();
             BindingContext = this;
 
 
             loginPage = p;
+            //settingspage
+
+            Data settings = new Data();
+            StackLayout s = new StackLayout();
+            Xamarin.Forms.Switch GPS_Switch = new Xamarin.Forms.Switch();
+            GPS_Switch.AutomationId = "GPS_Switch";
+            Xamarin.Forms.Switch ScreenT_Switch = new Xamarin.Forms.Switch();
+            Button Test_Save = new Button();
+            Test_Save.AutomationId = "Save_Button";
+
+
+
+            ScreenT_Switch.AutomationId = "Screen_Switch";
+            GPS_Switch.Toggled += Toggle_Clicked;
+            ScreenT_Switch.Toggled += Toggle_Clicked;
+            Test_Save.Clicked += Button_Save;
+
+            s.Children.Add(new Label { Text = "Settings!" });
+            s.Children.Add(new Label { Text = "GPS Toggle" });
+            s.Children.Add(GPS_Switch);
+            s.Children.Add(new Label { Text = "Screen Time Toggle" });
+            s.Children.Add(ScreenT_Switch);
+            s.Children.Add(Test_Save);
+            settings.Content = s;
+
+            var main = this; // adding settings button to mainpage
+            main.ToolbarItems.Add(new ToolbarItem
+            {
+                IconImageSource = new FontImageSource
+                {
+                    FontFamily = "FA2",
+                    Glyph = FontAwesome2.FontAwesomeIcons2.Wrench,
+                    Size = 18,
+                    Color = Color.White
+                },
+                Command = new Command(() =>
+                {
+                    if (main.IsBusy == true) { return; }
+                    else { Navigation.PushAsync(settings); }
+                })
+            });
+            Xamarin.Forms.NavigationPage.SetHasBackButton(main, false);
+
+
+
             picker = new Xamarin.Forms.Picker
             {
                 Title = "Select a Day",
@@ -55,7 +102,7 @@ namespace App3
             screenTimePicker = new Xamarin.Forms.Picker
             {
                 Title = "Select",
-                Items = { "This Week", "Today" },
+                
                 
             };
 
@@ -65,7 +112,7 @@ namespace App3
             ScreenTime_Tapped.Tapped += Button_Clicked;
             //TestButton.Clicked += Button_Clicked;
             picker.SelectedIndexChanged += DatePicked;
-            screenTimePicker.SelectedIndexChanged += screenTimePicked;
+            //screenTimePicker.SelectedIndexChanged += screenTimePicked;
             
 
             pin = new List<Pin>();
@@ -92,13 +139,48 @@ namespace App3
         private Xamarin.Forms.Maps.Polyline _polyline;
         int time;
         ChartView currentChart;
-        private async void screenTimePicked(object sender, EventArgs args)
-        {
-           
+        //private async void screenTimePicked(object sender, EventArgs args)
+        //{
+        //    // Get the selected date from the picker
+        //    string selectedDate = screenTimePicker.SelectedItem.ToString();
 
-            
-        }
-        
+        //    // Convert the selected date to a DateTime object
+        //    DateTime date = DateTime.ParseExact(selectedDate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+        //    // Fetch the data for the selected date from the database
+        //    Dictionary<string, double> appUsageData = new Dictionary<string, double>();
+        //    _conn = new NpgsqlConnection(connString);
+
+        //    using (_conn)
+        //    {
+        //        _conn.Open();
+        //        string query = "SELECT app_name, usage_duration FROM app_usage WHERE id = @id AND usage_date = @day";
+        //        using (var command = new NpgsqlCommand(query, _conn))
+        //        {
+        //            command.Parameters.AddWithValue("@id", pk);
+        //            command.Parameters.AddWithValue("@day", date);
+        //            var reader = command.ExecuteReader();
+
+        //            while (reader.Read())
+        //            {
+        //                string appName = reader.GetString(0);
+        //                double usageTime = reader.GetDouble(1);
+        //                appUsageData[appName] = usageTime;
+        //            }
+        //        }
+        //    }
+
+        //    // Update the chart with the new data
+        //    var chart = new Microcharts.BarChart()
+        //    {
+        //        Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#FF1493") }).ToList(),
+        //        BackgroundColor = SKColor.Parse("#FFFFFF"),
+        //    };
+
+        //    currentChart.Chart = chart;
+        //}
+
+
 
         private void DatePicked(object sender, EventArgs args)
         {
@@ -121,8 +203,58 @@ namespace App3
 
         }
         Data GPSpage;
-        
-        
+
+
+        private async void Button_Save(object s, EventArgs e) {
+            IsBusy = true;
+            pk = loginPage.getPrimaryKey();
+
+            // Get the app usage time and store it in a database or file
+            IAppUsageTracker appUsageTracker = DependencyService.Get<IAppUsageTracker>();
+
+            Dictionary<string, double> appUsageTime = appUsageTracker.GetAppUsageTime();
+
+
+            if (appUsageTracker.HasUsageAccessGranted())
+            {
+                // Use a background thread to fetch the app usage data
+                await Task.Run(() =>
+                {
+                    
+                    var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (pair.Value));
+
+                    try
+                    {
+                        _conn = new NpgsqlConnection(connString);
+
+                        _conn.Open();
+                        foreach (var appUsage in appUsageData)
+                        {
+                            var cmd = new NpgsqlCommand();
+                            cmd.Connection = _conn;
+                            cmd.CommandText = "INSERT INTO app_usage(id,package_name, usage_duration, usage_date) VALUES (@id,@package_name, @usage_duration, to_timestamp(@usage_date, 'YYYY-MM-DD HH24:MI:SS'))";
+                            cmd.Parameters.AddWithValue("@id", pk);
+                            cmd.Parameters.AddWithValue("@package_name", appUsage.Key);
+                            cmd.Parameters.AddWithValue("@usage_duration", appUsage.Value);
+                            cmd.Parameters.AddWithValue("@usage_date", DateTime.Today.ToString("yyyy-MM-dd") + " 00:00:00");
+                            cmd.ExecuteNonQuery();
+                        }
+                        Debug.WriteLine("Successfully saved data");
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex.Message);
+                    }
+                    finally
+                    {
+
+                        _conn.Close();
+                    }
+
+                });
+            }
+            IsBusy = false;
+        }
 
         private async void Button_Clicked(object sender, EventArgs e)
         {
@@ -145,6 +277,8 @@ namespace App3
                         IsBusy = true; //loading screen
 
                         picker.Items.Clear();
+                        availableDays.Clear();
+
                         availableDays = new List<DateTime>();
                         Debug.WriteLine("GPS Clicked");
                         StackLayout s = new StackLayout();
@@ -214,12 +348,34 @@ namespace App3
                 }
                 else if (button == ScreenTime)
                 {
-
+                    //screenTimePicker.Items.Clear();
+                    //availableDays.Clear();
+                    //availableDays = new List<DateTime>();
                     Debug.WriteLine("ScreenTime Clicked");
                     IsBusy = true;
                     StackLayout s = new StackLayout();
-                    
+                    //s.Children.Add(screenTimePicker);
+                    //_conn = new NpgsqlConnection(connString);
+                    //using (_conn)   //Gathering all the dates avaliable in the database.
+                    //{
+                    //    _conn.Open();
+                    //    string query = "SELECT DISTINCT usage_date::date FROM app_usage WHERE id = @id";
+                    //    using (var command = new NpgsqlCommand(query, _conn))
+                    //    {
+                    //        command.Parameters.AddWithValue("@id", pk);
+                    //        var reader = command.ExecuteReader();
 
+                    //        while (reader.Read())
+                    //        {
+                    //            availableDays.Add(Convert.ToDateTime(reader["usage_date"]));
+                    //        }
+                    //    }
+                    //}
+
+                    //foreach (DateTime day in availableDays) //Displaying all dates in a Picker object
+                    //{
+                    //    screenTimePicker.Items.Add(day.ToString("MM/dd/yyyy"));
+                    //}
 
                     Xamarin.Forms.ScrollView scrollview = new Xamarin.Forms.ScrollView();
                     s.Children.Add(scrollview);
@@ -237,12 +393,12 @@ namespace App3
                             {
 
 
-                                var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (float)TimeSpan.FromMilliseconds(pair.Value).TotalSeconds);
+                                var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (pair.Value));
                                 
 
                                 var chart = new Microcharts.BarChart()
                                 {
-                                    Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} hrs", Color = SKColor.Parse("#FF1493") }).ToList(),
+                                    Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#FF1493") }).ToList(),
                                     BackgroundColor = SKColor.Parse("#FFFFFF"),
                                 };
 
@@ -327,7 +483,50 @@ namespace App3
             }
             catch (Exception ex) { Debug.WriteLine("Error 3: " + ex.Message); }
         }
-        
+
+
+        private async void Toggle_Clicked(object sender, ToggledEventArgs e)
+        {
+            bool isToggled = e.Value;
+            Xamarin.Forms.Switch s = sender as Xamarin.Forms.Switch;
+
+            if (isToggled && s.AutomationId == "GPS_Switch")
+            {
+
+                //GPS Permission Requesting
+                System.Diagnostics.Debug.WriteLine("GPS_Switch Toggle On");
+                var status = await Permissions.RequestAsync<Permissions.LocationAlways>();
+                if (status != PermissionStatus.Granted)
+                {
+                    Debug.WriteLine("No Permission yet");
+
+                    return;
+
+                }
+                if (status == PermissionStatus.Granted)
+                {
+                    DependencyService.Get<IStartService>().StartService("LocationService", pk);
+                }
+            }
+            if (!isToggled && s.AutomationId == "GPS_Switch")
+            {
+                System.Diagnostics.Debug.WriteLine("GPS_Switch Toggle Off");
+                DependencyService.Get<IStopService>().StopService("LocationService");
+            }
+
+            //AppTime Service
+            if (isToggled && s.AutomationId == "Screen_Switch")
+            {
+
+                Debug.WriteLine("Screen_Time Toggled On");
+                DependencyService.Get<IStartService>().StartService("ScreenTime", pk);
+            }
+            if (!isToggled && s.AutomationId == "Screen_Switch")
+            {
+                Debug.WriteLine("Screen_Time Toggled Off");
+                DependencyService.Get<IStopService>().StopService("ScreenTime");
+            }
+        }
 
 
         public partial class Motion2 : ContentPage
