@@ -8,14 +8,14 @@
              >
 
     <Grid>
-        <StackLayout BackgroundColor="White">
-            <Frame BackgroundColor="#FFE633" Padding="12" CornerRadius="0">
+        <StackLayout BackgroundColor="#FFF2B3 ">
+            <Frame BackgroundColor="#F4D03F" Padding="12" CornerRadius="0">
                 <Label Text="Home" HorizontalTextAlignment="Center" FontSize="36" FontFamily="BUB"/>
             </Frame>
 
             <ScrollView HeightRequest="1000">
                 <StackLayout>
-                    <StackLayout HeightRequest="200" BackgroundColor="#FFE633" Margin="0,0,0,0"  HorizontalOptions="FillAndExpand" Orientation="Vertical"  VerticalOptions="Center" x:Name="GPS">
+                    <StackLayout HeightRequest="200" BackgroundColor="#F4D03F" Margin="0,0,0,0"  HorizontalOptions="FillAndExpand" Orientation="Vertical"  VerticalOptions="Center" x:Name="GPS">
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer x:Name="GPS_Tapped" NumberOfTapsRequired="1" />
                         </StackLayout.GestureRecognizers>
@@ -24,7 +24,7 @@
                         <Label Text="Location Tracking" HorizontalTextAlignment="Center"  FontFamily="BUB"></Label>
                     </StackLayout>
 
-                    <StackLayout HeightRequest="200" BackgroundColor="#FFE633" HorizontalOptions="FillAndExpand" Orientation="Vertical" VerticalOptions="Center" x:Name="Motion">
+                    <StackLayout HeightRequest="200" BackgroundColor="#F4D03F" HorizontalOptions="FillAndExpand" Orientation="Vertical" VerticalOptions="Center" x:Name="Motion">
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer x:Name="Motion_Tapped" NumberOfTapsRequired="1" />
                         </StackLayout.GestureRecognizers>
@@ -33,7 +33,7 @@
                         <Label Text="Motion Tracking" HorizontalTextAlignment="Center" FontFamily="BUB"></Label>
                     </StackLayout>
 
-                    <StackLayout HeightRequest="200" BackgroundColor="#FFE633" HorizontalOptions="FillAndExpand" Orientation="Vertical" VerticalOptions="Center" x:Name="ScreenTime">
+                    <StackLayout HeightRequest="200" BackgroundColor="#F4D03F" HorizontalOptions="FillAndExpand" Orientation="Vertical" VerticalOptions="Center" x:Name="ScreenTime">
                         <StackLayout.GestureRecognizers>
                             <TapGestureRecognizer x:Name="ScreenTime_Tapped" NumberOfTapsRequired="1" />
                         </StackLayout.GestureRecognizers>
@@ -44,14 +44,7 @@
 
 
 
-                    <StackLayout HeightRequest="200" BackgroundColor="#FFE633" HorizontalOptions="FillAndExpand" Orientation="Vertical" VerticalOptions="Center" x:Name="Text">
-                        <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer x:Name="Text_Tapped" NumberOfTapsRequired="1" />
-                        </StackLayout.GestureRecognizers>
-
-                        <Label Text="{x:Static FontAwesome2:FontAwesomeIcons2.EnvelopeOpenText}"  Margin="0,40" TextColor="DarkGray" FontFamily="FA2" FontSize="40" HorizontalTextAlignment="Center" BackgroundColor="Transparent"></Label>
-                        <Label Text="Text Recognition" HorizontalTextAlignment="Center" FontFamily="BUB"></Label>
-                    </StackLayout>
+                    
                 </StackLayout>
             </ScrollView>
         </StackLayout>
@@ -72,7 +65,7 @@
                      VerticalOptions="CenterAndExpand"
                      HorizontalOptions="CenterAndExpand">
             <ActivityIndicator IsRunning="{Binding IsBusy}"
-                                   Color="Black" />
+                                   Color="White" />
 
         </StackLayout>
     </Grid>

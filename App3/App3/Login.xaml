@@ -4,11 +4,19 @@
              xmlns:helpers="clr-namespace:App3.Helpers;assembly=App3"
              xmlns:FontAwesome="clr-namespace:FontAwesome"
              >
-    <ContentPage.Content>
-        <StackLayout Orientation="Vertical" Padding="25,0,25,0" BackgroundColor="#FFE633">
-            <Label Text="{x:Static FontAwesome:FontAwesomeIcons.Star}" FontFamily="FA" FontSize="50" HorizontalTextAlignment="Center"></Label>
-            <Label Text="Stat Treck" FontSize="30" FontFamily="BUB2" HorizontalOptions="Center" />
-            <Label Text="Sign In" FontFamily="BUB" FontSize="30" Margin="5,50,0,0" />
+
+    <ContentPage.Resources>
+        <Style x:Key="TextColorStyle" TargetType="Label">
+            <Setter Property="TextColor" Value="#434343" />
+        </Style>
+    </ContentPage.Resources>
+
+
+    <ContentPage.Content >
+        <StackLayout Orientation="Vertical" Padding="25,0,25,0" BackgroundColor="#F4D03F">
+            <Label Text="{x:Static FontAwesome:FontAwesomeIcons.Star}" FontFamily="FA" FontSize="50" Style="{StaticResource TextColorStyle}" HorizontalTextAlignment="Center"></Label>
+            <Label Text="Stat Treck"  FontSize="30" FontFamily="BUB2" HorizontalOptions="Center" Style="{StaticResource TextColorStyle}" />
+            <Label Text="Sign In" FontFamily="BUB" FontSize="30"  Margin="5,50,0,0" Style="{StaticResource TextColorStyle}"/>
             <Entry x:Name="usernameEntry" Placeholder="Username" FontFamily="BUB" HeightRequest="80" />
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -64,3 +72,4 @@
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
+

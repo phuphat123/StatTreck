@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text;
+
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Essentials;
-using System.Data;
+
 using Xamarin.Forms.Maps;
 using Npgsql;
-using SQLite;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using System.Globalization;
+
+
+
 using App3.Helpers;
 using Microcharts.Forms;
-using Xamarin.Forms.Shapes;
-using Xamarin.Forms.PlatformConfiguration;
+
 using SkiaSharp;
-using App3;
+
 
 namespace App3
 {
@@ -38,15 +36,16 @@ namespace App3
         Xamarin.Forms.Picker screenTimePicker;
         List<DateTime> availableDays;
 
-        
 
 
 
-public MainPage(Page1 p)
+
+
+        public MainPage(Page1 p)
         {
             InitializeComponent();
             BindingContext = this;
-
+            
 
             loginPage = p;
             //settingspage
@@ -90,6 +89,9 @@ public MainPage(Page1 p)
                     else { Navigation.PushAsync(settings); }
                 })
             });
+
+            
+
             Xamarin.Forms.NavigationPage.SetHasBackButton(main, false);
 
 
@@ -98,7 +100,6 @@ public MainPage(Page1 p)
             {
                 Title = "Select a Day",
             };
-
             screenTimePicker = new Xamarin.Forms.Picker
             {
                 Title = "Select",
@@ -277,7 +278,7 @@ public MainPage(Page1 p)
                         IsBusy = true; //loading screen
 
                         picker.Items.Clear();
-                        availableDays.Clear();
+                        
 
                         availableDays = new List<DateTime>();
                         Debug.WriteLine("GPS Clicked");

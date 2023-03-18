@@ -20,8 +20,8 @@ namespace App3
 
     public partial class Page1 : ContentPage
     {
-        MainPage main;
-
+        //MainPage main;
+        FlyoutPage f;
         string connection;
         NpgsqlConnection c;
         public int pk;
@@ -31,10 +31,11 @@ namespace App3
             this.c = c;
             this.connection = connection;
             Page1 reference = this;
-            main = new MainPage(reference);
-
+            //main = new MainPage(reference);
+            f = new FlyoutPage(reference);
             
         }
+
 
         private void ShowPassword_Clicked(object sender, EventArgs e) {
             //show the password
@@ -89,7 +90,7 @@ namespace App3
                             Debug.WriteLine("Login Success!");
                             reader.Dispose();
                             String selectPrimaryKey = "SELECT id FROM users WHERE username = @username";
-
+                             //retrieving primary key
                             using (NpgsqlCommand commandd = new NpgsqlCommand(selectPrimaryKey, c))
                             {
                                 commandd.Parameters.AddWithValue("@username", username);
@@ -100,8 +101,16 @@ namespace App3
                                     int primaryKey = Convert.ToInt32(result);
                                     pk = primaryKey;
                                     Debug.WriteLine("Retrieved primary key." + pk);
-                                    await Navigation.PushAsync(main, true);
+
+                                    
+                                    await Navigation.PushAsync(f, true);
                                     c.Close();
+                                    Preferences.Set("IsLoggedIn", true);
+                                    Preferences.Set("Username", username);
+                                    Preferences.Set("PK", primaryKey.ToString());
+                                    
+
+
                                     Navigation.RemovePage(this);
                                 }
                                 else
