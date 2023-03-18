@@ -19,13 +19,13 @@ namespace App3
         MainPage main;
         public FlyoutPage(Page1 p)
         {
-            
+
             this.p = p;
             NavigationPage.SetHasNavigationBar(this, false);
             NavigationPage.SetHasBackButton(this, false);
             // Set up the flyout menu
 
-
+            
 
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (sss, e) =>

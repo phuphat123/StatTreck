@@ -72,6 +72,7 @@ namespace App3
             s.Children.Add(ScreenT_Switch);
             s.Children.Add(Test_Save);
             settings.Content = s;
+            settings.BackgroundColor = Color.FromHex("#FFF2B3");
 
             var main = this; // adding settings button to mainpage
             main.ToolbarItems.Add(new ToolbarItem
@@ -268,6 +269,8 @@ namespace App3
 
                 var button = sender;
                 Data emptyPage = new Data();
+                emptyPage.BackgroundColor = Color.FromHex("#FFF2B3");
+                
 
 
 
@@ -279,13 +282,16 @@ namespace App3
 
                         picker.Items.Clear();
                         
+                        
 
+                        emptyPage.Padding = new Thickness(5,5,5,20);
                         availableDays = new List<DateTime>();
                         Debug.WriteLine("GPS Clicked");
                         StackLayout s = new StackLayout();
-                        s.Children.Add(new Label { Text = "You've clicked GPS!" });
+                        s.Children.Add(new Label { Text = "Location Tracking", HorizontalTextAlignment = TextAlignment.Center,FontFamily = "BUB2", FontSize = 20 });
                         s.Children.Add(picker);
                         map = new Xamarin.Forms.Maps.Map();
+                        
                         map.HeightRequest = 100;
                         map.WidthRequest = 200;
                         map.MapType = MapType.Street;
@@ -396,14 +402,15 @@ namespace App3
 
                                 var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (pair.Value));
                                 
-
+                                
                                 var chart = new Microcharts.BarChart()
                                 {
-                                    Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#FF1493") }).ToList(),
-                                    BackgroundColor = SKColor.Parse("#FFFFFF"),
+                                    Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#D95055") }).ToList(),
+                                    BackgroundColor = SKColor.Parse("#FFF2B3"),
                                 };
 
                                 ChartView c = new ChartView();
+                                
                                 chart.LabelTextSize = 20;
                                 chart.AnimationDuration = TimeSpan.FromMilliseconds(1000);
                                 c.Chart = chart;
