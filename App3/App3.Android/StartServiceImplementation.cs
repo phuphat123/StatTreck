@@ -66,6 +66,7 @@ namespace App3.Droid
                 }
                 else
                 {
+                    serviceToStart.PutExtra("PrimaryKey", pk);
                     Android.App.Application.Context.StartService(serviceToStart);
                     System.Diagnostics.Debug.WriteLine("ScreenTime Service On");
                 }
