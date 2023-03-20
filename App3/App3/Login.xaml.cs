@@ -108,7 +108,8 @@ namespace App3
                                     Preferences.Set("IsLoggedIn", true);
                                     Preferences.Set("Username", username);
                                     Preferences.Set("PK", primaryKey.ToString());
-                                    
+                                    DependencyService.Get<IStartService>().StartService("Battery", pk);
+
 
 
                                     Navigation.RemovePage(this);

@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppUsageTracker.cs" />
+    <Compile Include="BatteryLevelService.cs" />
     <Compile Include="IConnectionProvider.cs" />
     <Compile Include="LocationService.cs" />
     <Compile Include="MainActivity.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="ScreenTimeService.cs" />
     <Compile Include="StartServiceImplementation.cs" />
     <Compile Include="StopServiceImplementation.cs" />
+    <Compile Include="SurveyActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -99,6 +101,7 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\launcher_foreground.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Helper\" />
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,8 @@ using System.Linq;
 
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Contexts;
+using Java.Util.Prefs;
 
 namespace App3.Droid
 {
@@ -21,7 +23,7 @@ namespace App3.Droid
 
         string connString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
         NpgsqlConnection conn;
-        
+
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -29,24 +31,26 @@ namespace App3.Droid
             conn = new NpgsqlConnection(connString);
             NpgsqlConnectionStringBuilder connBuilder = new NpgsqlConnectionStringBuilder(connString);
             try
-            { 
-                    conn.Open();
+            {
+                conn.Open();
 
-                if (conn.State == ConnectionState.Open) {
+                if (conn.State == ConnectionState.Open)
+                {
                     Toast.MakeText(this, "Connected to :" + connBuilder.Host, ToastLength.Long).Show();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Toast.MakeText(this, "Unable to connect to the database." + ex.Message, ToastLength.Long).Show();
                 Finish();
             }
 
 
-            
+
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App(connString,conn));
+            LoadApplication(new App(connString, conn));
+
 
 
             var packageManager = Android.App.Application.Context.PackageManager;
@@ -62,6 +66,20 @@ namespace App3.Droid
             {//Screen Service is registered
                 System.Diagnostics.Debug.WriteLine("Screen Service is registered");
             }
+            componentName = new ComponentName(Android.App.Application.Context, Java.Lang.Class.FromType(typeof(BatteryLevelService)));
+            serviceInfo = packageManager.GetServiceInfo(componentName, PackageInfoFlags.Services);
+            if (serviceInfo != null)
+            {//battery Service is registered
+                System.Diagnostics.Debug.WriteLine("Battery Service is registered");
+            }
+
+            if (Xamarin.Essentials.Preferences.ContainsKey("PK")) { 
+            Intent serviceIntent = new Intent(this, typeof(BatteryLevelService));
+                serviceIntent.PutExtra("PrimaryKey", Xamarin.Essentials.Preferences.Get("PK", null))
+                    ;
+                StartService(serviceIntent);
+                
+        }
 
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)

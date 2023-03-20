@@ -29,6 +29,12 @@ namespace App3.Droid
                 var serviceToStop = new Intent(Android.App.Application.Context, typeof(ScreenTimeService));
                 Android.App.Application.Context.StopService(serviceToStop);
             }
+            if (s == "Battery")
+            {
+                System.Diagnostics.Debug.WriteLine("Battery Stop");
+                var serviceToStop = new Intent(Android.App.Application.Context, typeof(BatteryLevelService));
+                Android.App.Application.Context.StopService(serviceToStop);
+            }
         }
 
 

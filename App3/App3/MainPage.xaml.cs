@@ -25,6 +25,7 @@ namespace App3
 
 
     {
+        //Database Connection
         string connString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
         NpgsqlConnection _conn;
         int pk;
@@ -96,7 +97,7 @@ namespace App3
             Xamarin.Forms.NavigationPage.SetHasBackButton(main, false);
 
 
-
+            //Date Pickers
             picker = new Xamarin.Forms.Picker
             {
                 Title = "Select a Day",
@@ -135,9 +136,8 @@ namespace App3
         }
 
 
-
+        //Google Maps for Map Feature
         Xamarin.Forms.Maps.Map map;
-
         private Xamarin.Forms.Maps.Polyline _polyline;
         int time;
         ChartView currentChart;
@@ -206,7 +206,7 @@ namespace App3
         }
         Data GPSpage;
 
-
+        //Test Button for saving AppUsageData
         private async void Button_Save(object s, EventArgs e) {
             IsBusy = true;
             pk = loginPage.getPrimaryKey();
@@ -257,8 +257,8 @@ namespace App3
             }
             IsBusy = false;
         }
-
-        private async void Button_Clicked(object sender, EventArgs e)
+        //EventHandler for features
+        private async void Button_Clicked(object sender, EventArgs e) 
         {
             try
             {
@@ -332,9 +332,6 @@ namespace App3
                         IsBusy = false;
                     }
                 }
-
-
-
                 else if (button == Motion) //Motion Button
                 {
                     IsBusy = true;

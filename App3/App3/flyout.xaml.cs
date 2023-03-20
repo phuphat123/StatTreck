@@ -10,6 +10,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using FontAwesome;
 using FontAwesome2;
+using App3.Helpers;
+
 namespace App3
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -20,13 +22,15 @@ namespace App3
         public FlyoutPage(Page1 p)
         {
 
+
+
+
             this.p = p;
             NavigationPage.SetHasNavigationBar(this, false);
             NavigationPage.SetHasBackButton(this, false);
             // Set up the flyout menu
 
-            
-
+            //EventHandler for LogOut Button
             var tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += (sss, e) =>
             {
@@ -38,9 +42,17 @@ namespace App3
                 conn.Open();
                 Application.Current.MainPage = new NavigationPage(new Page1(ss, conn));
                 ((NavigationPage)Application.Current.MainPage).BarBackgroundColor = Color.FromHex("#F4D03F");
+                try
+                {
+                    DependencyService.Get<IStopService>().StopService("Battery");
+
+                }
+                catch { }
                 IsBusy = false;
+
             };
-            
+
+            //FlyOutMenu Content
             Grid grid = new Grid();
             grid.BackgroundColor = Color.FromHex("#EFE5B0");
             grid.Padding = (new Thickness(20, 10, 20, 10));
@@ -49,7 +61,6 @@ namespace App3
 
             var pressedState = new VisualState { Name = "Pressed" };
             var unpressedState = new VisualState { Name = "Unpressed" };
-
             var backgroundColorSetter = new Setter { Property = VisualElement.BackgroundColorProperty, Value = Color.Gray };
 
             pressedState.Setters.Add(backgroundColorSetter);
@@ -80,9 +91,10 @@ namespace App3
                 FontSize = 18,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalTextAlignment = TextAlignment.End
-                
+
             };
-            Label logoutLabel = new Label {
+            Label logoutLabel = new Label
+            {
                 Text = "Log Out",
                 HorizontalTextAlignment = TextAlignment.Start,
                 VerticalOptions = LayoutOptions.Center,
@@ -97,11 +109,10 @@ namespace App3
             grid.Children.Add(logout);
 
             StackLayout s = new StackLayout();
-            
-            s.Children.Add(new Label {Text = "Menu" , FontFamily = "BUB2", HorizontalTextAlignment = TextAlignment.Center ,FontSize = 30, Margin = new Thickness(10,10,10,650)});
-            
+
+            s.Children.Add(new Label { Text = "Menu", FontFamily = "BUB2", HorizontalTextAlignment = TextAlignment.Center, FontSize = 30, Margin = new Thickness(10, 10, 10, 650) });
             s.Children.Add(grid);
-            
+
             var menuPage = new ContentPage
             {
                 Title = "Menu",
@@ -111,19 +122,22 @@ namespace App3
                     Children =
                     {
                        s
-                        
+
                     }
                 }
             };
             this.Flyout = menuPage;
 
-            // Set up the main page
+            //MainPage set up as Main Content
             main = new MainPage(p);
             this.Detail = new NavigationPage(main);
             ((NavigationPage)Detail).BarBackgroundColor = Color.FromHex("#F4D03F");
             Application.Current.MainPage = this;
-        }
 
-        
+
+
+
+
+        }
     }
 }

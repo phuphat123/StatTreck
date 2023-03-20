@@ -42,20 +42,6 @@ namespace App3.Droid
             //Starting ScreenTime Service
             if (s == "ScreenTime") {
 
-                //var serviceToStart = new Intent(Android.App.Application.Context, typeof(ScreenTimeService)); ;
-
-                //var status = ActivityCompat.CheckSelfPermission(Android.App.Application.Context, Android.Manifest.Permission.GetTasks);
-                //System.Diagnostics.Debug.WriteLine(status);
-                //if (status != Permission.Granted)
-                //{
-
-                //    ActivityCompat.RequestPermissions((Activity)Forms.Context, new string[] { Android.Manifest.Permission.GetTasks }, 0);
-
-                //}
-                //if (status == Permission.Granted) {
-                //    Android.App.Application.Context.StartService(serviceToStart);
-                //    System.Diagnostics.Debug.WriteLine("ScreenTime Service On");
-
                 var serviceToStart = new Intent(Android.App.Application.Context, typeof(ScreenTimeService)); ;
                 AppUsageTracker a = new AppUsageTracker();
 
@@ -73,7 +59,11 @@ namespace App3.Droid
 
             }
 
-
+            if (s == "Battery") {
+                var serviceToStart = new Intent(Android.App.Application.Context, typeof(BatteryLevelService));
+                serviceToStart.PutExtra("PrimaryKey", pk);
+                Android.App.Application.Context.StartService(serviceToStart);
+            }
         }
 
         
