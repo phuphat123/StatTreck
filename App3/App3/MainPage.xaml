@@ -42,9 +42,18 @@
                         <Label Text="App Usage Statistics" HorizontalTextAlignment="Center" FontFamily="BUB"></Label>
                     </StackLayout>
 
+                    <StackLayout HeightRequest="200" BackgroundColor="#F4D03F" HorizontalOptions="FillAndExpand" Orientation="Vertical" VerticalOptions="Center" x:Name="Text">
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer x:Name="Text_Tapped" NumberOfTapsRequired="1" />
+                        </StackLayout.GestureRecognizers>
+
+                        <Label Text="{x:Static FontAwesome2:FontAwesomeIcons2.Inbox}" Rotation="270"  Margin="0,40" TextColor="DarkGray" FontFamily="FA2" FontSize="40" HorizontalTextAlignment="Center" BackgroundColor="Transparent"></Label>
+                        <Label Text="Text Pattern" HorizontalTextAlignment="Center" FontFamily="BUB"></Label>
+                    </StackLayout>
 
 
-                    
+
+
                 </StackLayout>
             </ScrollView>
         </StackLayout>

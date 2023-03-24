@@ -75,6 +75,8 @@
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenTimeService.cs" />
+    <Compile Include="SmsMessageData.cs" />
+    <Compile Include="SmsProcessingService.cs" />
     <Compile Include="StartServiceImplementation.cs" />
     <Compile Include="StopServiceImplementation.cs" />
     <Compile Include="SurveyActivity.cs" />
@@ -109,6 +111,11 @@
       <Project>{0560E5F2-845D-4FE4-BAE1-BC37E36B0770}</Project>
       <Name>App3</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\survey_activity.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

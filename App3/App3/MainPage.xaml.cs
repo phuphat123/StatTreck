@@ -17,6 +17,7 @@ using App3.Helpers;
 using Microcharts.Forms;
 
 using SkiaSharp;
+using System.Globalization;
 
 
 namespace App3
@@ -35,11 +36,12 @@ namespace App3
         List<Pin> pin;
         Xamarin.Forms.Picker picker;
         Xamarin.Forms.Picker screenTimePicker;
-        List<DateTime> availableDays;
+        
 
 
 
 
+        public ChartView CurrentChart { get; set; }
 
 
         public MainPage(Page1 p)
@@ -115,7 +117,8 @@ namespace App3
             ScreenTime_Tapped.Tapped += Button_Clicked;
             //TestButton.Clicked += Button_Clicked;
             picker.SelectedIndexChanged += DatePicked;
-            //screenTimePicker.SelectedIndexChanged += screenTimePicked;
+            Text_Tapped.Tapped += Button_Clicked;
+            screenTimePicker.SelectedIndexChanged += screenTimePicked;
             
 
             pin = new List<Pin>();
@@ -140,52 +143,57 @@ namespace App3
         Xamarin.Forms.Maps.Map map;
         private Xamarin.Forms.Maps.Polyline _polyline;
         int time;
-        ChartView currentChart;
-        //private async void screenTimePicked(object sender, EventArgs args)
-        //{
-        //    // Get the selected date from the picker
-        //    string selectedDate = screenTimePicker.SelectedItem.ToString();
+        
+        private async void screenTimePicked(object sender, EventArgs args)
+        {
+            if (screenTimePicker.SelectedItem == null) return; // Add this line to check for null
 
-        //    // Convert the selected date to a DateTime object
-        //    DateTime date = DateTime.ParseExact(selectedDate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            // Get the selected date from the picker
+            string selectedDate = screenTimePicker.SelectedItem.ToString();
 
-        //    // Fetch the data for the selected date from the database
-        //    Dictionary<string, double> appUsageData = new Dictionary<string, double>();
-        //    _conn = new NpgsqlConnection(connString);
+            // Convert the selected date to a DateTime object
+            DateTime date = DateTime.ParseExact(selectedDate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
 
-        //    using (_conn)
-        //    {
-        //        _conn.Open();
-        //        string query = "SELECT app_name, usage_duration FROM app_usage WHERE id = @id AND usage_date = @day";
-        //        using (var command = new NpgsqlCommand(query, _conn))
-        //        {
-        //            command.Parameters.AddWithValue("@id", pk);
-        //            command.Parameters.AddWithValue("@day", date);
-        //            var reader = command.ExecuteReader();
+            // Fetch the data for the selected date from the database
+            Dictionary<string, double> appUsageData = new Dictionary<string, double>();
+            _conn = new NpgsqlConnection(connString);
 
-        //            while (reader.Read())
-        //            {
-        //                string appName = reader.GetString(0);
-        //                double usageTime = reader.GetDouble(1);
-        //                appUsageData[appName] = usageTime;
-        //            }
-        //        }
-        //    }
+            using (_conn)
+            {
+                _conn.Open();
+                string query = "SELECT package_name, usage_duration FROM app_usage WHERE id = @id AND usage_date = @day";
+                using (var command = new NpgsqlCommand(query, _conn))
+                {
+                    command.Parameters.AddWithValue("@id", pk);
+                    command.Parameters.AddWithValue("@day", date);
+                    var reader = command.ExecuteReader();
 
-        //    // Update the chart with the new data
-        //    var chart = new Microcharts.BarChart()
-        //    {
-        //        Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#FF1493") }).ToList(),
-        //        BackgroundColor = SKColor.Parse("#FFFFFF"),
-        //    };
+                    while (reader.Read())
+                    {
+                        string appName = reader.GetString(0);
+                        double usageTime = reader.GetDouble(1);
+                        appUsageData[appName] = usageTime;
+                    }
+                }
+            }
 
-        //    currentChart.Chart = chart;
-        //}
+            // Update the chart with the new data
+            var chart = new Microcharts.BarChart()
+            {
+                Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#FF1493") }).ToList(),
+                BackgroundColor = SKColor.Parse("#FFFFFF"),
+            };
+
+            CurrentChart.Chart = chart;
+
+        }
 
 
-
+        //Datepicker for GPS
         private void DatePicked(object sender, EventArgs args)
         {
+            if (picker.SelectedItem == null) return; // Add this line to check for null
+
             Debug.WriteLine("DatePicked called!");
             var pins = map.Pins;
             
@@ -196,7 +204,7 @@ namespace App3
             }
             map.MapElements.Remove(_polyline);
             
-            plotLocations(availableDays[picker.SelectedIndex]);
+            plotLocations(availableDaysGPS[picker.SelectedIndex]);
             Position tempPos = map.Pins[0].Position;
             var mapSpan = MapSpan.FromCenterAndRadius(tempPos, Distance.FromMeters(500));
             map.MoveToRegion(mapSpan);
@@ -258,6 +266,10 @@ namespace App3
             IsBusy = false;
         }
         //EventHandler for features
+
+        List<DateTime> availableDaysST;
+        List<DateTime> availableDaysGPS;
+
         private async void Button_Clicked(object sender, EventArgs e) 
         {
             try
@@ -270,7 +282,7 @@ namespace App3
                 var button = sender;
                 Data emptyPage = new Data();
                 emptyPage.BackgroundColor = Color.FromHex("#FFF2B3");
-                
+
 
 
 
@@ -281,17 +293,17 @@ namespace App3
                         IsBusy = true; //loading screen
 
                         picker.Items.Clear();
-                        
-                        
 
-                        emptyPage.Padding = new Thickness(5,5,5,20);
-                        availableDays = new List<DateTime>();
+
+
+                        emptyPage.Padding = new Thickness(5, 5, 5, 20);
+                        availableDaysGPS = new List<DateTime>();
                         Debug.WriteLine("GPS Clicked");
                         StackLayout s = new StackLayout();
-                        s.Children.Add(new Label { Text = "Location Tracking", HorizontalTextAlignment = TextAlignment.Center,FontFamily = "BUB2", FontSize = 20 });
+                        s.Children.Add(new Label { Text = "Location Tracking", HorizontalTextAlignment = TextAlignment.Center, FontFamily = "BUB2", FontSize = 20 });
                         s.Children.Add(picker);
                         map = new Xamarin.Forms.Maps.Map();
-                        
+
                         map.HeightRequest = 100;
                         map.WidthRequest = 200;
                         map.MapType = MapType.Street;
@@ -308,12 +320,12 @@ namespace App3
 
                                 while (reader.Read())
                                 {
-                                    availableDays.Add(Convert.ToDateTime(reader["date"]));
+                                    availableDaysGPS.Add(Convert.ToDateTime(reader["date"]));
                                 }
                             }
                         }
 
-                        foreach (DateTime day in availableDays) //Displaying all dates in a Picker object
+                        foreach (DateTime day in availableDaysGPS) //Displaying all dates in a Picker object
                         {
                             picker.Items.Add(day.ToString("MM/dd/yyyy"));
                         }
@@ -352,89 +364,73 @@ namespace App3
                 }
                 else if (button == ScreenTime)
                 {
-                    //screenTimePicker.Items.Clear();
-                    //availableDays.Clear();
-                    //availableDays = new List<DateTime>();
+                    
+
+                    screenTimePicker.Items.Clear();
+                    
+                    
+                    
+                    availableDaysST = new List<DateTime>();
                     Debug.WriteLine("ScreenTime Clicked");
                     IsBusy = true;
                     StackLayout s = new StackLayout();
-                    //s.Children.Add(screenTimePicker);
-                    //_conn = new NpgsqlConnection(connString);
-                    //using (_conn)   //Gathering all the dates avaliable in the database.
-                    //{
-                    //    _conn.Open();
-                    //    string query = "SELECT DISTINCT usage_date::date FROM app_usage WHERE id = @id";
-                    //    using (var command = new NpgsqlCommand(query, _conn))
-                    //    {
-                    //        command.Parameters.AddWithValue("@id", pk);
-                    //        var reader = command.ExecuteReader();
+                    s.Children.Add(screenTimePicker);
+                    _conn = new NpgsqlConnection(connString);
+                    using (_conn)   //Gathering all the dates avaliable in the database.
+                    {
+                        _conn.Open();
+                        string query = "SELECT DISTINCT usage_date::date FROM app_usage WHERE id = @id";
+                        using (var command = new NpgsqlCommand(query, _conn))
+                        {
+                            command.Parameters.AddWithValue("@id", pk);
+                            var reader = command.ExecuteReader();
 
-                    //        while (reader.Read())
-                    //        {
-                    //            availableDays.Add(Convert.ToDateTime(reader["usage_date"]));
-                    //        }
-                    //    }
-                    //}
+                            while (reader.Read())
+                            {
+                                availableDaysST.Add(Convert.ToDateTime(reader["usage_date"]));
+                            }
+                        }
+                    }
 
-                    //foreach (DateTime day in availableDays) //Displaying all dates in a Picker object
-                    //{
-                    //    screenTimePicker.Items.Add(day.ToString("MM/dd/yyyy"));
-                    //}
+                    foreach (DateTime day in availableDaysST) //Displaying all dates in a Picker object
+                    {
+                        screenTimePicker.Items.Add(day.ToString("MM/dd/yyyy"));
+                    }
 
                     Xamarin.Forms.ScrollView scrollview = new Xamarin.Forms.ScrollView();
                     s.Children.Add(scrollview);
 
 
-                    IAppUsageTracker appUsageTracker = DependencyService.Get<IAppUsageTracker>();
-                    if (appUsageTracker.HasUsageAccessGranted())
-                    {
-
-                        // Use a background thread to fetch the app usage data
-                        await Task.Run(() =>
-                        {
-                            Dictionary<string, double> appUsageTime = appUsageTracker.GetAppUsageTime();
-                            Device.BeginInvokeOnMainThread(() =>
-                            {
 
 
-                                var appUsageData = appUsageTime.ToDictionary(pair => pair.Key, pair => (pair.Value));
-                                
-                                
-                                var chart = new Microcharts.BarChart()
-                                {
-                                    Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#D95055") }).ToList(),
-                                    BackgroundColor = SKColor.Parse("#FFF2B3"),
-                                };
-
+                    var chart = new Microcharts.BarChart();
                                 ChartView c = new ChartView();
-                                
+
                                 chart.LabelTextSize = 20;
-                                chart.AnimationDuration = TimeSpan.FromMilliseconds(1000);
+                    chart.AnimationDuration = TimeSpan.FromSeconds(10);
                                 c.Chart = chart;
                                 c.HeightRequest = 1500;
                                 c.WidthRequest = 1500;
+                    ChartView currentChart = c; // Declare and initialize currentChart here
 
-                                currentChart = c;
-                                scrollview.Content = currentChart;
+                    
+                                CurrentChart = c;
+                    
+
+                    scrollview.Content = currentChart;
                                 scrollview.Orientation = ScrollOrientation.Horizontal;
 
                                 emptyPage.Content = s;
-                                
 
-                            });
-                        });
 
-                    }
-                    else
-                    {
-                        appUsageTracker.RequestUsageAccess();
-                        emptyPage.Content = new Label { Text = "no access" };
+                            
 
-                    }
+                    
                     await Navigation.PushAsync(emptyPage);
                     IsBusy = false;
 
                 }
+                else if (button == Text) { }
 
             }
             catch(Exception ex) { Debug.WriteLine("Error 5: "+ ex.Message); }

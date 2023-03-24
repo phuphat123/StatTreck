@@ -4,47 +4,105 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Java.Util.Prefs;
+using Npgsql;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Xamarin.Forms;
+using static Xamarin.Essentials.Platform;
 
 namespace App3.Droid
 {
     [Activity(Label = "SurveyActivity")]
     public class SurveyActivity : Activity
     {
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
+
             string pageToLaunch = Intent.GetStringExtra("PageToLaunch");
             if (pageToLaunch == "Survey")
             {
-                // Launch the MyPage fragment or activity here
-               
-                if (Xamarin.Forms.Application.Current != null)
-                {
-                    // Push the Survey page onto the navigation stack
-                    var surveyPage = new NavigationPage(new Survey());
-                    Xamarin.Forms.Application.Current.MainPage.Navigation.PushAsync(surveyPage);
-                }
-                else
-                {
-                    // The Xamarin.Forms application is not running, so start it and push the Survey page
-                    Xamarin.Forms.Forms.Init(this, savedInstanceState);
-                    var surveyPage = new Survey();
-                    var navigationPage = new NavigationPage(surveyPage);
-                    Xamarin.Forms.Application.Current.MainPage = navigationPage;
-                }
+                // Set the activity layout
+                SetContentView(Resource.Layout.survey_activity);
 
-                //var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-                //notificationManager.Cancel(5);
-                //var surveyPageIntent = new Intent(this, typeof(Survey));
-                //StartActivity(surveyPageIntent);
+                // Find the button views
+                var happyButton = FindViewById<Button>(Resource.Id.happy_button);
+                var mediumButton = FindViewById<Button>(Resource.Id.medium_button);
+                var sadButton = FindViewById<Button>(Resource.Id.sad_button);
 
+                // Attach event handlers to the button clicks
+                happyButton.Click += OnHappyButtonClicked;
+                mediumButton.Click += OnMediumButtonClicked;
+                sadButton.Click += OnSadButtonClicked;
             }
+        }
+        string mood = "";
+        string connString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
+
+        private void OnHappyButtonClicked(object sender, EventArgs e)
+        {
+            // Handle the happy button click
+            // ...
+            mood = "happy";
+            DatabaseSend(mood);
+            Finish();
+
+        }
+
+        private void OnMediumButtonClicked(object sender, EventArgs e)
+        {
+            // Handle the medium button click
+            // ...
+            mood = "medium";
+            DatabaseSend(mood);
+            Finish();
+
+        }
+
+        private void OnSadButtonClicked(object sender, EventArgs e)
+        {
+            // Handle the sad button click
+            // ...
+            mood = "sad";
+            DatabaseSend(mood);
+            Finish();
+
+
+        }
+        
+
+        private void DatabaseSend(string s) {
+            try
+            {
+
+                using (var conn = new NpgsqlConnection(connString))
+
+                {
+                    conn.Open();
+                    var currentDate = DateTime.Now;
+                    string sql = "INSERT INTO emotions (id,mood, date) VALUES (@id,@mood, @date)";
+                    var id = int.Parse(Xamarin.Essentials.Preferences.Get("PK", null));
+                    ;
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        // Add parameters to the command
+                        cmd.Parameters.AddWithValue("id",id);
+                        cmd.Parameters.AddWithValue("mood", s);
+                        cmd.Parameters.AddWithValue("date", currentDate);
+
+                        // Execute the command
+                        cmd.ExecuteNonQuery();
+                        Toast.MakeText(this, "Successfully Submitted", ToastLength.Long).Show();
+                        conn.Close();
+                        BatteryLevelService.Stop();
+                    }
+                }
+            }
+            catch(Exception ex) {
+                Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+            }
+
         }
     }
 }

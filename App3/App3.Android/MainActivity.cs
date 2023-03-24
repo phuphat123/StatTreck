@@ -41,8 +41,8 @@ namespace App3.Droid
             }
             catch (Exception ex)
             {
-                Toast.MakeText(this, "Unable to connect to the database." + ex.Message, ToastLength.Long).Show();
-                Finish();
+                Toast.MakeText(this, "Enable KentUni GlobalProtect VPN " + ex.Message, ToastLength.Long).Show();
+                
             }
 
 
@@ -77,6 +77,7 @@ namespace App3.Droid
             Intent serviceIntent = new Intent(this, typeof(BatteryLevelService));
                 serviceIntent.PutExtra("PrimaryKey", Xamarin.Essentials.Preferences.Get("PK", null))
                     ;
+                
                 StartService(serviceIntent);
                 
         }
