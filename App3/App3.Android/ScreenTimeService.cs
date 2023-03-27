@@ -39,7 +39,7 @@ namespace App3.Droid
             var notification = new Notification.Builder(this, "app")
                 .SetContentTitle("App Usage Tracking")
                 .SetContentText("App Usage Tracking currently on")
-                .SetSmallIcon(Resource.Drawable.material_ic_menu_arrow_up_black_24dp)
+                .SetSmallIcon(Resource.Drawable.ic_stat_add_to_home_screen)
                 .Build();
 
             StartForeground(2, notification);
@@ -68,7 +68,7 @@ namespace App3.Droid
             var notification = new Notification.Builder(this, "app")
                 .SetContentTitle("App Usage Tracking")
                 .SetContentText("Saving app usage time...")
-                .SetSmallIcon(Resource.Drawable.material_ic_menu_arrow_up_black_24dp)
+                .SetSmallIcon(Resource.Drawable.ic_stat_file_upload)
                 .Build();
 
             notificationManager.Notify(3, notification);

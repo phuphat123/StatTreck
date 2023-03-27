@@ -62,7 +62,7 @@ namespace App3.Droid
             var notification = new Notification.Builder(this, "location_channel")
                 .SetContentTitle("Location Service")
                 .SetContentText("Location Service is running")
-                .SetSmallIcon(Resource.Drawable.ic_mtrl_chip_checked_black)
+                .SetSmallIcon(Resource.Drawable.ic_stat_add_location_alt)
                 .Build();
 
             StartForeground(NOTIFICATION_ID, notification);
