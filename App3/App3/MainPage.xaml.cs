@@ -61,6 +61,8 @@ namespace App3
             Button Test_Save = new Button();
             Test_Save.AutomationId = "Save_Button";
 
+            //chartview
+            c = new ChartView();
 
 
             ScreenT_Switch.AutomationId = "Screen_Switch";
@@ -73,7 +75,7 @@ namespace App3
             s.Children.Add(GPS_Switch);
             s.Children.Add(new Label { Text = "Screen Time Toggle" });
             s.Children.Add(ScreenT_Switch);
-            s.Children.Add(Test_Save);
+            //s.Children.Add(Test_Save);
             settings.Content = s;
             settings.BackgroundColor = Color.FromHex("#FFF2B3");
 
@@ -143,7 +145,9 @@ namespace App3
         Xamarin.Forms.Maps.Map map;
         private Xamarin.Forms.Maps.Polyline _polyline;
         int time;
-        
+
+        int items;
+        int width = 1500;
         private async void screenTimePicked(object sender, EventArgs args)
         {
             if (screenTimePicker.SelectedItem == null) return; // Add this line to check for null
@@ -181,11 +185,13 @@ namespace App3
             var chart = new Microcharts.BarChart()
             {
                 Entries = appUsageData.Select(pair => new Microcharts.ChartEntry((float)pair.Value) { Label = pair.Key, ValueLabel = $"{pair.Value:F2} mins", Color = SKColor.Parse("#FF1493") }).ToList(),
-                BackgroundColor = SKColor.Parse("#FFFFFF"),
+                BackgroundColor = SKColor.Parse("#FFF2B3"),
+                
             };
-
-            CurrentChart.Chart = chart;
-
+            items = appUsageData.Count;
+            c.Chart = chart;
+            width = items * 60;
+            c.WidthRequest = width;
         }
 
 
@@ -270,6 +276,7 @@ namespace App3
         List<DateTime> availableDaysST;
         List<DateTime> availableDaysGPS;
 
+        ChartView c;
         private async void Button_Clicked(object sender, EventArgs e) 
         {
             try
@@ -374,6 +381,7 @@ namespace App3
                     Debug.WriteLine("ScreenTime Clicked");
                     IsBusy = true;
                     StackLayout s = new StackLayout();
+                    s.BackgroundColor = Color.FromHex("#FFF2B3");
                     s.Children.Add(screenTimePicker);
                     _conn = new NpgsqlConnection(connString);
                     using (_conn)   //Gathering all the dates avaliable in the database.
@@ -398,28 +406,34 @@ namespace App3
                     }
 
                     Xamarin.Forms.ScrollView scrollview = new Xamarin.Forms.ScrollView();
+                    
                     s.Children.Add(scrollview);
 
 
 
 
-                    var chart = new Microcharts.BarChart();
-                                ChartView c = new ChartView();
+                    var chart = new Microcharts.BarChart()
+                    ;
+                    
+                    
+                                 
 
                                 chart.LabelTextSize = 20;
                     chart.AnimationDuration = TimeSpan.FromSeconds(10);
                                 c.Chart = chart;
                                 c.HeightRequest = 1500;
                                 c.WidthRequest = 1500;
-                    ChartView currentChart = c; // Declare and initialize currentChart here
 
                     
-                                CurrentChart = c;
                     
 
-                    scrollview.Content = currentChart;
+                    
+                                
+                    
+
+                    scrollview.Content = c;
                                 scrollview.Orientation = ScrollOrientation.Horizontal;
-
+                    scrollview.WidthRequest = width;
                                 emptyPage.Content = s;
 
 

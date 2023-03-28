@@ -77,7 +77,7 @@ namespace App3.Droid
             if (_locationManager.IsProviderEnabled(_locationProvider) && _locationManager.AllProviders.Contains(_locationProvider))
             {
 
-                _locationManager.RequestLocationUpdates(_locationProvider, 10000, 2, this);
+                _locationManager.RequestLocationUpdates(_locationProvider, 5000, 2, this);
 
             }
             else
