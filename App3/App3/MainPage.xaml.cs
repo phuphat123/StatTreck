@@ -381,7 +381,7 @@ namespace App3
                     Debug.WriteLine("ScreenTime Clicked");
                     IsBusy = true;
                     StackLayout s = new StackLayout();
-                    s.BackgroundColor = Color.FromHex("#FFF2B3");
+                    
                     s.Children.Add(screenTimePicker);
                     _conn = new NpgsqlConnection(connString);
                     using (_conn)   //Gathering all the dates avaliable in the database.
