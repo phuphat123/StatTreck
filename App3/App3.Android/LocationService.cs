@@ -53,6 +53,7 @@ namespace App3.Droid
             Android.Util.Log.Debug("LocationService", "OnStartCommand Called");
 
             primaryKey = intent.GetIntExtra("PrimaryKey", -1);
+            System.Diagnostics.Debug.WriteLine("Primary Key Retrieved L.S : " + primaryKey);
 
 
             var channel = new NotificationChannel("location_channel", "Location Channel", NotificationImportance.High);

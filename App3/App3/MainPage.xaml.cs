@@ -37,6 +37,7 @@ namespace App3
         Xamarin.Forms.Picker picker;
         Xamarin.Forms.Picker screenTimePicker;
         
+        
 
 
 
@@ -52,6 +53,10 @@ namespace App3
 
             loginPage = p;
             //settingspage
+            
+            
+            pk = loginPage.getPrimaryKey();
+
 
             Data settings = new Data();
             StackLayout s = new StackLayout();
@@ -282,7 +287,6 @@ namespace App3
             try
             {
                 //clear datepicker
-                pk = loginPage.getPrimaryKey();
 
                 Debug.WriteLine("Button Clicked!");
 

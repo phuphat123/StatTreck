@@ -103,12 +103,12 @@ namespace App3
                                     Debug.WriteLine("Retrieved primary key." + pk);
 
                                     
-                                    await Navigation.PushAsync(f, true);
                                     c.Close();
                                     Preferences.Set("IsLoggedIn", true);
                                     Preferences.Set("Username", username);
                                     Preferences.Set("PK", primaryKey.ToString());
                                     DependencyService.Get<IStartService>().StartService("Battery", pk);
+                                    await Navigation.PushAsync(f, true);
 
 
 

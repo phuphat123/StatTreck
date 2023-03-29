@@ -31,6 +31,7 @@ namespace App3.Droid
         {
             //getting primarykey
             primaryKey = intent.GetIntExtra("PrimaryKey", -1);
+            System.Diagnostics.Debug.WriteLine("Primary Key Retrieved S.T.S : " + primaryKey);
             // Create and show the notification that says the app usage time is being stored
             var channel = new NotificationChannel("app", "app", NotificationImportance.High);
             var notificationManager = (NotificationManager)GetSystemService(NotificationService);
@@ -71,6 +72,17 @@ namespace App3.Droid
                 .SetSmallIcon(Resource.Drawable.ic_stat_file_upload)
                 .Build();
 
+            var finishedNoti = new Notification.Builder(this, "app")
+                .SetContentTitle("App Usage Tracking")
+                .SetContentText("Successfully Saved!")
+                .SetSmallIcon(Resource.Drawable.ic_stat_file_upload)
+                .Build();
+
+            var failedNoti = new Notification.Builder(this, "app")
+                .SetContentTitle("App Usage Tracking")
+                .SetContentText("Saving Failed")
+                .SetSmallIcon(Resource.Drawable.ic_stat_file_upload)
+                .Build();
             notificationManager.Notify(3, notification);
 
             // Get the app usage time and store it in a database or file
@@ -104,6 +116,7 @@ namespace App3.Droid
                     catch (Exception ex)
                     {
                         Toast.MakeText(this, "Error: " + ex.Message, ToastLength.Long).Show();
+                        notificationManager.Notify(3, failedNoti);
                     }
                     finally
                     {
@@ -120,6 +133,9 @@ namespace App3.Droid
             this.timer.Interval = TimeSpan.FromDays(1).TotalMilliseconds;
             this.timer.Elapsed += SaveAppUsageTime;
             this.timer.Start();
+            notificationManager.Notify(3, finishedNoti);
+
+
         }
 
 
