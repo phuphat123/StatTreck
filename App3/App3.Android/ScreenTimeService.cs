@@ -112,11 +112,13 @@ namespace App3.Droid
                             cmd.Parameters.AddWithValue("@usage_date", DateTime.Today.ToString("yyyy-MM-dd") + " 00:00:00");
                             cmd.ExecuteNonQuery();
                         }
+                        notificationManager.Notify(3, finishedNoti);
                     }
                     catch (Exception ex)
                     {
-                        Toast.MakeText(this, "Error: " + ex.Message, ToastLength.Long).Show();
-                        notificationManager.Notify(3, failedNoti);
+                        notificationManager.Notify(10, failedNoti);
+                        notificationManager.Cancel(3);
+                        return;
                     }
                     finally
                     {
@@ -133,7 +135,7 @@ namespace App3.Droid
             this.timer.Interval = TimeSpan.FromDays(1).TotalMilliseconds;
             this.timer.Elapsed += SaveAppUsageTime;
             this.timer.Start();
-            notificationManager.Notify(3, finishedNoti);
+            
 
 
         }

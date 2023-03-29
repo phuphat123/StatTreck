@@ -45,7 +45,8 @@ namespace App3.Droid
             _conn = new NpgsqlConnection(connString);
             
         }
-
+        NotificationChannel _channel;
+        NotificationManager _notificationManager;
 
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
         {
@@ -56,9 +57,9 @@ namespace App3.Droid
             System.Diagnostics.Debug.WriteLine("Primary Key Retrieved L.S : " + primaryKey);
 
 
-            var channel = new NotificationChannel("location_channel", "Location Channel", NotificationImportance.High);
-            var notificationManager = (NotificationManager)GetSystemService(NotificationService);
-            notificationManager.CreateNotificationChannel(channel);
+             _channel = new NotificationChannel("location_channel", "Location Channel", NotificationImportance.High);
+             _notificationManager = (NotificationManager)GetSystemService(NotificationService);
+            _notificationManager.CreateNotificationChannel(_channel);
 
             var notification = new Notification.Builder(this, "location_channel")
                 .SetContentTitle("Location Service")
@@ -109,12 +110,18 @@ namespace App3.Droid
 
             System.Diagnostics.Debug.WriteLine(latitude + "," + longitude);
             String msg = "New Latitude: " + latitude + "New Longitude: " + longitude;
+            var failedNoti = new Notification.Builder(this, "app")
+                .SetContentTitle("Location Service")
+                .SetContentText("Uploading Coordinates Failed")
+                .SetSmallIcon(Resource.Drawable.ic_stat_file_upload)
+                .Build();
+
+
             try
             {
                 var cmd = new NpgsqlCommand();
                 _conn.Open();
-                try
-                {       //INSERT coordinates into database
+                       //INSERT coordinates into database
                     cmd.Connection = _conn;
                     cmd.CommandText = "INSERT INTO coordinates(id ,latitude, longitude, date) VALUES (@id ,@latitude, @longitude, to_timestamp(@date, 'YYYY-MM-DD HH24:MI:SS'))";
                     cmd.Parameters.AddWithValue("@id", primaryKey);
@@ -122,19 +129,19 @@ namespace App3.Droid
                     cmd.Parameters.AddWithValue("@longitude", longitude);
                     cmd.Parameters.AddWithValue("@date", formattedDateTime);
                     cmd.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    Toast.MakeText(this, "Error1" + ex.Message, ToastLength.Long).Show();
-                }
-                finally
-                {
+                
+                
+                
                     _conn.Close();
-                }
+                
             }
             catch (Exception ex)
             {
-                Toast.MakeText(this, "Error 2" + ex.Message, ToastLength.Long).Show();
+                Toast.MakeText(this, "Error1" + ex.Message, ToastLength.Long).Show();
+                _notificationManager.Notify(11, failedNoti);
+                StopForeground(true);
+                OnDestroy();
+                return;
             }
 
 
