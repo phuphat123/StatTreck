@@ -35,6 +35,11 @@ namespace App3.Droid
                 var serviceToStop = new Intent(Android.App.Application.Context, typeof(BatteryLevelService));
                 Android.App.Application.Context.StopService(serviceToStop);
             }
+            if (s == "Motion") {
+                System.Diagnostics.Debug.WriteLine("Motion Stop");
+                var serviceToStop = new Intent(Android.App.Application.Context, typeof(MotionTrackingBackgroundService));
+                Android.App.Application.Context.StopService(serviceToStop);
+            }
         }
 
 

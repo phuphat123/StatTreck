@@ -36,7 +36,7 @@ namespace App3.Droid
             var channel = new NotificationChannel("app", "app", NotificationImportance.High);
             var notificationManager = (NotificationManager)GetSystemService(NotificationService);
             notificationManager.CreateNotificationChannel(channel);
-
+            
             var notification = new Notification.Builder(this, "app")
                 .SetContentTitle("App Usage Tracking")
                 .SetContentText("App Usage Tracking currently on")

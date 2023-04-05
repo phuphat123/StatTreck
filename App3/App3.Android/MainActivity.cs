@@ -72,6 +72,12 @@ namespace App3.Droid
             {//battery Service is registered
                 System.Diagnostics.Debug.WriteLine("Battery Service is registered");
             }
+            componentName = new ComponentName(Android.App.Application.Context, Java.Lang.Class.FromType(typeof(MotionTrackingBackgroundService)));
+            serviceInfo = packageManager.GetServiceInfo(componentName, PackageInfoFlags.Services);
+            if (serviceInfo != null)
+            {//battery Service is registered
+                System.Diagnostics.Debug.WriteLine("Motion Service is registered");
+            }
 
             if (Xamarin.Essentials.Preferences.ContainsKey("PK")) { 
             Intent serviceIntent = new Intent(this, typeof(BatteryLevelService));

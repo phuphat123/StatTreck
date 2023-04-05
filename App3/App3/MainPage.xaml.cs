@@ -36,8 +36,9 @@ namespace App3
         List<Pin> pin;
         Xamarin.Forms.Picker picker;
         Xamarin.Forms.Picker screenTimePicker;
-        
-        
+        Xamarin.Forms.Picker MotionTimePicker;
+
+
 
 
 
@@ -53,8 +54,6 @@ namespace App3
 
             loginPage = p;
             //settingspage
-            
-            
             pk = loginPage.getPrimaryKey();
 
 
@@ -63,6 +62,8 @@ namespace App3
             Xamarin.Forms.Switch GPS_Switch = new Xamarin.Forms.Switch();
             GPS_Switch.AutomationId = "GPS_Switch";
             Xamarin.Forms.Switch ScreenT_Switch = new Xamarin.Forms.Switch();
+            Xamarin.Forms.Switch Motion_Switch = new Xamarin.Forms.Switch();
+            Motion_Switch.AutomationId = "Motion_Switch";
             Button Test_Save = new Button();
             Test_Save.AutomationId = "Save_Button";
 
@@ -73,13 +74,17 @@ namespace App3
             ScreenT_Switch.AutomationId = "Screen_Switch";
             GPS_Switch.Toggled += Toggle_Clicked;
             ScreenT_Switch.Toggled += Toggle_Clicked;
+            Motion_Switch.Toggled += Toggle_Clicked;
             Test_Save.Clicked += Button_Save;
 
-            s.Children.Add(new Label { Text = "Settings!" });
-            s.Children.Add(new Label { Text = "GPS Toggle" });
+            s.Children.Add(new Label { Text = "Settings", FontSize = 24, FontFamily = "BUB2" });
+            s.Children.Add(new Label { Text = "GPS Toggle", FontFamily = "BUB2" });
             s.Children.Add(GPS_Switch);
-            s.Children.Add(new Label { Text = "Screen Time Toggle" });
+            s.Children.Add(new Label { Text = "Screen Time Toggle", FontFamily = "BUB2" });
             s.Children.Add(ScreenT_Switch);
+            s.Children.Add(new Label { Text = "Motion Sensor Toggle", FontFamily = "BUB2" });
+            s.Children.Add(Motion_Switch);
+
             //s.Children.Add(Test_Save);
             settings.Content = s;
             settings.BackgroundColor = Color.FromHex("#FFF2B3");
@@ -113,9 +118,11 @@ namespace App3
             };
             screenTimePicker = new Xamarin.Forms.Picker
             {
+                Title = "Select",   
+            };
+            MotionTimePicker = new Xamarin.Forms.Picker
+            {
                 Title = "Select",
-                
-                
             };
 
             //actionlisteners
@@ -126,7 +133,7 @@ namespace App3
             picker.SelectedIndexChanged += DatePicked;
             Text_Tapped.Tapped += Button_Clicked;
             screenTimePicker.SelectedIndexChanged += screenTimePicked;
-            
+            MotionTimePicker.SelectedIndexChanged += MotionTimePicked;
 
             pin = new List<Pin>();
 
@@ -153,6 +160,63 @@ namespace App3
 
         int items;
         int width = 1500;
+
+        private async void MotionTimePicked(object sender, EventArgs args)
+        {
+            if (MotionTimePicker.SelectedItem == null) return;
+
+            string selectedDate = MotionTimePicker.SelectedItem.ToString();
+            StackLayout motion = new StackLayout();
+
+            
+
+            // Convert the selected date to a DateTime object
+            DateTime date = DateTime.ParseExact(selectedDate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+
+            // Fetch the data for the selected date from the database
+            _conn = new NpgsqlConnection(connString);
+
+            int columnIndex = 0;
+
+            await Task.Run(async () =>
+            {
+                using (_conn)
+                {
+                    _conn.Open();
+                    string query = "SELECT acceleration_x, acceleration_y,acceleration_z FROM motion WHERE id = @id AND date_trunc('day', timestamp) = @day";
+                    using (var command = new NpgsqlCommand(query, _conn))
+                    {
+                        command.Parameters.AddWithValue("@id", pk);
+                        command.Parameters.AddWithValue("@day", date);
+                        var reader = command.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            double x = reader.GetDouble(0);
+                            double y = reader.GetDouble(1);
+                            double z = reader.GetDouble(2);
+
+                            
+
+                            Device.BeginInvokeOnMainThread(() =>
+                            {
+                                motion.Children.Add(new Label {Text = "X: " + x + "Y: " + y + "Z: " + z});
+                                Debug.WriteLine(x + "," + y + "," + z);
+                            });
+
+                            columnIndex++;
+                        }
+                    }
+                }
+            });
+
+            ScrollView scroll = new ScrollView();
+            scroll.Content = motion;
+            // Add the grid to your page layout
+            MotionStackLayOut.Children.Add(scroll);
+            
+        }
+
         private async void screenTimePicked(object sender, EventArgs args)
         {
             if (screenTimePicker.SelectedItem == null) return; // Add this line to check for null
@@ -280,8 +344,11 @@ namespace App3
 
         List<DateTime> availableDaysST;
         List<DateTime> availableDaysGPS;
+        List<DateTime> avaliableDaysMotion;
 
         ChartView c;
+        
+        StackLayout MotionStackLayOut;
         private async void Button_Clicked(object sender, EventArgs e) 
         {
             try
@@ -293,7 +360,7 @@ namespace App3
                 var button = sender;
                 Data emptyPage = new Data();
                 emptyPage.BackgroundColor = Color.FromHex("#FFF2B3");
-
+                
 
 
 
@@ -359,17 +426,41 @@ namespace App3
                 {
                     IsBusy = true;
                     Debug.WriteLine("Motion Clicked");
-                    StackLayout s = new StackLayout();
-
-                    s.Children.Add(new Label { Text = "You have clicked motion" });
-
-                    var motionPage = new Motion2();
-                    motionPage.Shaken += (Shaken, args) =>
+                    
+                    MotionTimePicker.Items.Clear();
+                    avaliableDaysMotion = new List<DateTime>();
+                    MotionStackLayOut = new StackLayout();
+                    MotionStackLayOut.Children.Add(MotionTimePicker);
+                    _conn = new NpgsqlConnection(connString);
+                    
+                    ScrollView scroll = new ScrollView();
+                    using (_conn)   //Gathering all the dates avaliable in the database.
                     {
-                        s.Children.Add(new Label { Text = "Shake detected" });
-                        emptyPage.Content = s;
-                    };
-                    motionPage.ToggleAccelerometer();
+                        _conn.Open();
+                        string query = "SELECT DISTINCT timestamp::date FROM motion WHERE id = @id";
+                        using (var command = new NpgsqlCommand(query, _conn))
+                        {
+                            command.Parameters.AddWithValue("@id", pk);
+                            var reader = command.ExecuteReader();
+
+                            while (reader.Read())
+                            {
+                                avaliableDaysMotion.Add(Convert.ToDateTime(reader["timestamp"]));
+                            }
+                        }
+                    }
+
+                    foreach (DateTime day in avaliableDaysMotion) //Displaying all dates in a Picker object
+                    {
+                        MotionTimePicker.Items.Add(day.ToString("MM/dd/yyyy"));
+                    }
+
+                    
+                    
+                    
+
+                    emptyPage.Content = MotionStackLayOut;
+
                     await Navigation.PushAsync(emptyPage);
                     IsBusy = false;
                 }
@@ -451,7 +542,7 @@ namespace App3
                 else if (button == Text) { }
 
             }
-            catch(Exception ex) { Debug.WriteLine("Error 5: "+ ex.Message); }
+            catch(Exception ex) { Debug.WriteLine("Error 5: "+ ex.Message); return; }
         }
 
         private void plotLocations(DateTime d)
@@ -543,6 +634,18 @@ namespace App3
             if (!isToggled && s.AutomationId == "Screen_Switch")
             {
                 Debug.WriteLine("Screen_Time Toggled Off");
+                DependencyService.Get<IStopService>().StopService("ScreenTime");
+            }
+
+            if (isToggled && s.AutomationId == "Motion_Switch")
+            {
+
+                Debug.WriteLine("Motion_Time Toggled On");
+                DependencyService.Get<IStartService>().StartService("Motion", pk);
+            }
+            if (!isToggled && s.AutomationId == "Motion_Switch")
+            {
+                Debug.WriteLine("Motion_Time Toggled Off");
                 DependencyService.Get<IStopService>().StopService("ScreenTime");
             }
         }

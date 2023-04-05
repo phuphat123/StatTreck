@@ -78,6 +78,8 @@
     <Compile Include="IConnectionProvider.cs" />
     <Compile Include="LocationService.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="MotionTrackingBackgroundService.cs" />
+    <Compile Include="MotionTrackPerms.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenTimeService.cs" />
@@ -86,6 +88,8 @@
     <Compile Include="StartServiceImplementation.cs" />
     <Compile Include="StopServiceImplementation.cs" />
     <Compile Include="SurveyActivity.cs" />
+    <Compile Include="TextData.cs" />
+    <Compile Include="TextProcessingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -171,6 +175,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_stat_file_upload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_stat_360.png">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

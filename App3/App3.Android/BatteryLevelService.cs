@@ -37,14 +37,13 @@ namespace App3.Droid
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
         {
             _isEventHandlerEnabled = true;
-            System.Diagnostics.Debug.WriteLine("Primary Key Retrieved BLS : " + pk);
-
-            if (intent.HasExtra("PrimaryKey"))
-            {
-                pk = intent.GetIntExtra("PrimaryKey", -1);
-            }
-            else { Toast.MakeText(this, "BLS has no PK", ToastLength.Long).Show(); }
             
+
+            
+                pk = int.Parse(Preferences.Get("PK",null));
+            
+            
+            System.Diagnostics.Debug.WriteLine("Primary Key Retrieved BLS : " + pk);
             lock (_lock)
             {
                 if (_isRunning)
