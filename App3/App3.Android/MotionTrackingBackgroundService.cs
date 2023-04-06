@@ -1,11 +1,14 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+
 using Android.OS;
 using Android.Util;
 using Android.Widget;
 using Npgsql;
 using Xamarin.Essentials;
+using System.Threading;
 
 namespace App3.Droid
 {
@@ -27,11 +30,12 @@ namespace App3.Droid
             return null;
         }
         int primaryKey;
+        CancellationTokenSource _cancellationTokenSource;
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
         {
             primaryKey = intent.GetIntExtra("PrimaryKey", -1);
             System.Diagnostics.Debug.WriteLine("Primary Key Retrieved M.T.S : " + primaryKey);
-            
+
             _notificationManager = (NotificationManager)GetSystemService(NotificationService);
             _channel = new NotificationChannel("app", "app", NotificationImportance.High);
             _notificationManager.CreateNotificationChannel(_channel);
@@ -43,6 +47,7 @@ namespace App3.Droid
                 .Build();
             StartForeground(9, notification);
 
+            _cancellationTokenSource = new CancellationTokenSource();
             Accelerometer.ReadingChanged += Accelerometer_ReadingChanged;
             Accelerometer.Start(SensorSpeed.UI);
 
@@ -51,41 +56,23 @@ namespace App3.Droid
 
         public void Accelerometer_ReadingChanged(object sender, AccelerometerChangedEventArgs e)
         {
-            // This gets the acceleration values on the X, Y, and Z axes
-
-
-            // This starts a new task that runs the accelerometer service in the background
             _task = Task.Run(async () =>
             {
-                while (true)
+                while (!_cancellationTokenSource.Token.IsCancellationRequested)
                 {
                     var accelerationX = e.Reading.Acceleration.X;
                     var accelerationY = e.Reading.Acceleration.Y;
                     var accelerationZ = e.Reading.Acceleration.Z;
                     System.Diagnostics.Debug.WriteLine("X: " + accelerationX + "Y: " + accelerationY + "Z: " + accelerationZ);
                     SaveData(accelerationX, accelerationY, accelerationZ);
-                    await Task.Delay(5000);
+                    await Task.Delay(5000, _cancellationTokenSource.Token);
                 }
-            });
-           
+            }, _cancellationTokenSource.Token);
         }
 
 
         string connectionString = "Host=penguin.kent.ac.uk;Username=pp434;Password=rolibb8;Database=pp434";
-        //public void CreateTable()
-        //{
-        //    using (var conn = new NpgsqlConnection(connectionString))
-        //    {
-        //        conn.Open();
-        //        using (var cmd = new NpgsqlCommand())
-        //        {
-        //            cmd.Connection = conn;
-        //            cmd.CommandText = "CREATE TABLE IF NOT EXISTS motion (id SERIAL PRIMARY KEY, acceleration_x REAL, acceleration_y REAL, acceleration_z REAL)";
-        //            cmd.ExecuteNonQuery();
-        //        }
-        //    }
-        //}
-
+        
         //This function saves the accelerometer values to the database
         public void SaveData(double accelerationX, double accelerationY, double accelerationZ)
         {
@@ -101,7 +88,7 @@ namespace App3.Droid
                     cmd.Parameters.AddWithValue("acceleration_y", accelerationY);
                     cmd.Parameters.AddWithValue("acceleration_z", accelerationZ);
                     cmd.ExecuteNonQuery();
-                    
+
                 }
             }
         }
@@ -112,9 +99,10 @@ namespace App3.Droid
             base.OnDestroy();
 
             Log.Debug(TAG, "OnDestroy called");
+            Accelerometer.Stop();
+            Accelerometer.ReadingChanged -= Accelerometer_ReadingChanged;
 
-           
-            _task?.Dispose();
+            _cancellationTokenSource.Cancel(); // Cancel the running task
             _accelerometerService = null;
         }
     }

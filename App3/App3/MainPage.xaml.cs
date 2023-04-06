@@ -646,7 +646,7 @@ namespace App3
             if (!isToggled && s.AutomationId == "Motion_Switch")
             {
                 Debug.WriteLine("Motion_Time Toggled Off");
-                DependencyService.Get<IStopService>().StopService("ScreenTime");
+                DependencyService.Get<IStopService>().StopService("Motion");
             }
         }
 
